@@ -27,12 +27,12 @@ The second group of functions solve various impedance matching problems.
 The solution parameter changes the components to their compliments.
 
 ```
-to_halfpi(rin, za, solution=0):     match with a shunt input l-match
-to_halftee(rin, za, solution=0):    match with a series input l-match
-to_halfwave(zs, za, solution=0):    match with a 90 degree tee/pi section
-to_shunt(za):                       cancel reactance with a shunt section
-to_series(za):                      cancel reactance with a series section
-to_fullpi(deg, zo):                 shift phase with a pi section
+to_halfpi(rin, za, solution=0):           match with a shunt input l-match
+to_halftee(rin, za, solution=0):          match with a series input l-match
+to_halfwave(zs, za, solution=0):          match with a 90 degree tee/pi section
+to_shunt(za):                             cancel reactance with a shunt section
+to_series(za):                            cancel reactance with a series section
+to_fullpi(deg, zo):                       shift phase with a pi section
 to_fulltee(deg, zo):                      shift phase with a tee section
 to_halfpi2(zs, za, solution=(0,0)):       match with a double shunt l-match
 to_halftee2(zs, za, solution=(0,0)):      match with a double series l-match
@@ -74,7 +74,8 @@ it with 90 degrees of 50 ohm transmission line.
 
 ```
 from abcd import *
-line = vec(50, 1)
+line = vec(5, 1)
+status(line)
 line = tline(135) * line
 status(line)
 ```
@@ -82,10 +83,15 @@ status(line)
 Gives
 
 ```
-p(0) = 50.0000
-z(0) = 50.0000+0.0000j
-i(0) = 1.0000 / 135.0000
-e(0) = 50.0000 / 135.0000
+p(0) = 5.0000
+z(0) = 5.0000+0.0000j
+i(0) = 1.0000 / 0.0000
+e(0) = 5.0000 / 0.0000
+
+p(0) = 5.0000
+z(0) = 9.9010-49.0099j
+i(0) = 0.7106 / 174.2894
+e(0) = 35.5317 / 95.7106
 ```
 
 

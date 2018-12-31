@@ -1,7 +1,8 @@
 # ABCD 2-port functions for phasing vertical antenna arrays. 
 
 The examples are taken from Gehrke K2BT's "Vertical Phased Arrays"
-series in Ham Radio Magazine, May-July 1983, October 1983, December 1983.
+series in Ham Radio Magazine, May-July 1983, October 1983, December 1983,
+and from Capt. Paul Lee N6PL's "The Amateur Radio Vertical Antenna Handbook".
 
 The first group of functions calculate the ABCD matrix.
 The order of the components are entered in order from the

@@ -72,7 +72,8 @@ notation(x, precision=4):
 # Example
 
 For example, with a load of 1 amp and 5 volts flowing through it, transform
-it with 90 degrees of 50 ohm transmission line.
+the load with 135 degrees of 50 ohm transmission line to get what the source
+sees.
 
 
 ```

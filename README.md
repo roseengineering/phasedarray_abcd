@@ -5,7 +5,7 @@ series in Ham Radio Magazine, May-July 1983, October 1983, December 1983,
 and from Capt. Paul Lee N6PL's "The Amateur Radio Vertical Antenna Handbook".
 
 The first group of functions calculate the ABCD matrix.
-The order of the components are entered in order from the
+The impedance of the components are passed in order from the
 source side to the load side.
 
 ```

@@ -4,6 +4,9 @@ The examples are taken from Gehrke K2BT's "Vertical Phased Arrays"
 series in Ham Radio Magazine, May-July 1983, October 1983, December 1983,
 and from Capt. Paul Lee N6PL's "The Amateur Radio Vertical Antenna Handbook".
 
+What is a ABCD 2-port matrix?  See https://en.wikipedia.org/wiki/Two-port_network#ABCD-parameters 
+
+
 The first group of functions calculate the ABCD matrix.
 The impedance of the components are passed in order from the
 source side to the load side.

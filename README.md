@@ -42,33 +42,33 @@ to_fulltee2(zs, za, q=0, solution=(0,0)): match with a tee section
 The third group of functions are basically helper functions
 
 ```
-def qmin(zs, za):
-def qmin2(zs, za):
-def openstub(deg, zo):
-def shortstub(deg, zo):
-def reactance_value(component, fd):
-def component_value(impedance, fd):
-def parallel(*impedances):
-def vec(e, i):
-def emag(v):
-def ephase(v):
-def power(*vectors):
-def impedance(*vectors):
+qmin(zs, za):
+qmin2(zs, za):
+openstub(deg, zo):
+shortstub(deg, zo):
+reactance_value(component, fd):
+component_value(impedance, fd):
+parallel(*impedances):
+vec(e, i):
+emag(v):
+ephase(v):
+power(*vectors):
+impedance(*vectors):
 ```
 
 The fourth group of functions are for printing results:
 
 ```
-def polar(x):
-def status(v, note=0):
-def component(values, fd, precision=4):
-def notation(x, precision=4):
+polar(x):
+status(v, note=0):
+component(values, fd, precision=4):
+notation(x, precision=4):
 ```
 
 # Example
 
-For example, with a load with 1 amp and 5 volts going through it, transform
-the load with 90 degrees of 50 ohms transmission line.
+For example, with a load of 1 amp and 5 volts flowing through it, transform
+it with 90 degrees of 50 ohm transmission line.
 
 
 ```

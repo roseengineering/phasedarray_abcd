@@ -80,10 +80,11 @@ def halftee2(z1, y1, z2, y2):
 def halfpi2(z1, y1, z2, y2):
     return halfpi(z1, y1) * halfpi(z2, y2)
 
-# circuit solutions
-######################################
 
-# it keeps the phase the same!
+# solvers whose results are passed into above ABCD functions
+#############################################################
+
+# its solution keeps the phase the same!
 def to_halfwave(zs, za, solution=0):
     r1, r2 = zs.real, za.real
     x = np.sqrt(r1 * r2) * 1j
@@ -158,6 +159,46 @@ def to_series(za):
     x1 = -za.imag
     return (x1 * 1j,)
 
+def to_stub(ZL, Z0=50, method='ps'):
+    GL = z2g(ZL, Z0)
+    thL = np.angle(GL)
+    if method == 'ps':
+        bl = thL / 2 + np.array([1, -1]) * np.arccos(-abs(GL)) / 2
+        bd = np.arctan(-np.tan(2 * bl - thL) / 2)
+    elif method == 'po':
+        bl = thL / 2 + np.array([1, -1]) * np.arccos(-abs(GL)) / 2
+        bd = np.arccot(np.tan(2 * bl - thL) / 2)
+    elif method == 'ss':
+        bl = thL / 2 + np.array([1, -1]) * np.arccos(abs(GL)) / 2
+        bd = np.arccot(np.tan(2 * bl - thL) / 2)
+    elif method == 'so':
+        bl = thL / 2 + np.array([1, -1]) * np.arccos(abs(GL)) / 2
+        bd = np.arctan(-np.tan(2 * bl - thL) / 2)
+    else:
+        raise ValueError
+    return np.mod([bd, bl], np.pi) * 180 / np.pi
+
+
+# ABCD vector functions
+#####################################
+
+def vec(e, i):
+    return np.matrix([complex(e), complex(i)]).T
+
+def emag(v):
+    return float(np.absolute(v[0]))
+
+def ephase(v):
+    return float(np.angle(v[0], deg=True))
+
+def power(*vectors):
+    return sum(float(np.absolute(v[1])**2 * impedance(v).real) for v in vectors)
+
+def impedance(*vectors):
+    return 1 / sum(complex(v[1] / v[0]) for v in vectors)
+
+
+# helper functions
 ######################################
 
 # q for L network, or minimum q for tee or pi
@@ -191,25 +232,12 @@ def component_value(impedance, fd):
 def parallel(*impedances):
     return 1 / sum(1 / x for x in impedances)
 
-# for line
-
-def vec(e, i):
-    return np.matrix([complex(e), complex(i)]).T
-
-def emag(v):
-    return float(np.absolute(v[0]))
-
-def ephase(v):
-    return float(np.angle(v[0], deg=True))
-
-def power(*vectors):
-    return sum(float(np.absolute(v[1])**2 * impedance(v).real) for v in vectors)
-
-def impedance(*vectors):
-    return 1 / sum(complex(v[1] / v[0]) for v in vectors)
+def z2g(z, zo=50):
+    return (z - zo) / (z + zo)
 
 
-# for printing
+# print functions
+####################################
 
 def polar(x):
     return "%.4f / %.4f" % (np.absolute(x), np.angle(x, deg=True))

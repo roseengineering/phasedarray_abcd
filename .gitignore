@@ -1,6 +1,4 @@
-lee_p65.ipynb
-notes.txt
-Untitled.ipynb
+dev
 zip.sh
-*.m
-.ipynb_checkpoints/
+.ipynb_checkpoints
+makefile

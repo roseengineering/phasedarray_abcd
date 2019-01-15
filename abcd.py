@@ -45,7 +45,7 @@ def halftee(z, y):
 
 # <----O=======O---< ZL
 def tline(deg, zo=50):
-    theta = float(deg) * np.pi / 180
+    theta = np.deg2rad(deg)
     return np.matrix([
         [ np.cos(theta), 1j*zo*np.sin(theta)],
         [ 1j*np.sin(theta)/zo, np.cos(theta) ]
@@ -65,6 +65,13 @@ def fullpi(z1, z2, z3):
     return np.matrix([
         [ 1 + z2/z3, z2 ],
         [ (z1 + z2 + z3) / (z1*z3), 1 + z2/z1 ]
+    ])
+
+def gain(db):
+    g = 10 ** (db / 10)
+    return np.matrix([
+        [ np.sqrt(g), 0 ],
+        [ 0, np.sqrt(g) ]
     ])
 
 def halftee2(z1, y1, z2, y2):
@@ -104,14 +111,14 @@ def to_halftee(rin, za, solution=0):
 
 def to_fullpi(deg, zo):
     zo = zo.real
-    theta = float(deg) * np.pi / 180
+    theta = np.deg2rad(deg)
     x2 = zo * np.sin(theta)
     x1 = -zo * np.sin(theta) / (1 - np.cos(theta))
     return x1 * 1j, x2 * 1j, x1 * 1j
 
 def to_fulltee(deg, zo):
     zo = zo.real
-    theta = float(deg) * np.pi / 180
+    theta = np.deg2rad(deg)
     x2 = -zo / np.sin(theta)
     x1 = zo * (1 - np.cos(theta)) / np.sin(theta)
     return x1 * 1j, x2 * 1j, x1 * 1j
@@ -159,18 +166,18 @@ def qmin(zs, za):
     rs = min(zs.real, za.real)
     return np.sqrt(rp / rs - 1)
 
-# minimum q for a ll network
+# minimum q for a LL network
 def qmin2(zs, za):
     rp = max(zs.real, za.real)
     rv = np.sqrt(rp * rs)
     return np.sqrt(rp / rv - 1)
 
 def openstub(deg, zo):
-    theta = float(deg) * np.pi / 180
+    theta = np.deg2rad(deg)
     return -1j * zo * np.cot(theta)
 
 def shortstub(deg, zo):
-    theta = float(deg) * np.pi / 180
+    theta = np.deg2rad(deg)
     return 1j * zo * np.tan(theta)
 
 def reactance_value(component, fd):
@@ -178,9 +185,8 @@ def reactance_value(component, fd):
     return 1j / (w * component) if component < 0 else 1j * w * component
 
 def component_value(impedance, fd):
-    x = impedance.imag
     w = 2 * np.pi * fd
-    return 1 / (w * x) if x < 0 else x / w  
+    return 1 / (w * impedance.imag) if impedance.imag < 0 else impedance.imag / w  
 
 def parallel(*impedances):
     return 1 / sum(1 / x for x in impedances)
@@ -214,6 +220,9 @@ def status(v, note=0):
     print("i({}) = {}".format(note, polar(v[1])))
     print("e({}) = {}".format(note, polar(v[0])))
     print()
+
+def reactance(values, fd, precision=4):
+    return [ notation(reactance_value(z, fd), precision) for z in values ]
 
 def component(values, fd, precision=4):
     return [ notation(component_value(z, fd), precision) for z in values ]

@@ -82,13 +82,6 @@ def fullpi(z1, z2, z3):
         [ (z1 + z2 + z3) / (z1*z3), 1 + z2/z1 ]
     ])
 
-def gain(db):
-    g = 10 ** (db / 10)
-    return np.matrix([
-        [ np.sqrt(g), 0 ],
-        [ 0, np.sqrt(g) ]
-    ])
-
 def halftee2(z1, y1, z2, y2):
     return halftee(z1, y1) * halftee(z2, y2)
 

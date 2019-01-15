@@ -24,6 +24,7 @@ fulltee(z1, z2, z3):        a tee section
 fullpi(z1, z2, z3):         a pi section
 halftee2(z1, y1, z2, y2):   a double series input l-match
 halfpi2(z1, y1, z2, y2):    a double shunt input l-match
+gain(db):                   a gain (or loss)
 ```
 
 The second group of functions solve various impedance matching problems.
@@ -65,6 +66,7 @@ The fourth group of functions are for printing results:
 ```
 polar(x):
 status(v, note=0):
+reactance(values, fd, precision=4):
 component(values, fd, precision=4):
 notation(x, precision=4):
 ```

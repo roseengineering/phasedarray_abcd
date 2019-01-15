@@ -51,14 +51,15 @@ def halftee(z, y):
         [ 1/y , 1 ]
     ])
 
-def tline(deg, zo=50):
+def tline(deg, zo=50, loss=0):
     """
     <----O=======O---< ZL
+    loss is in db per meter
     """
-    theta = np.deg2rad(deg)
+    theta = loss / 8.688 + 1j * np.deg2rad(deg)
     return np.matrix([
-        [ np.cos(theta), 1j*zo*np.sin(theta)],
-        [ 1j*np.sin(theta)/zo, np.cos(theta) ]
+        [ np.cosh(theta), zo * np.sinh(theta)],
+        [ np.sinh(theta) / zo, np.cosh(theta) ]
     ])
 
 def fulltee(z1, z2, z3):

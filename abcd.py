@@ -18,50 +18,64 @@ def mutual(n, x1, k=1):
 def trans(n):
     return np.matrix([[ 1/n, 0], [0, n]])
     
-# <---Z---< ZL
 def series(z):
+    """
+    <---Z---< ZL
+    """
     return np.matrix([[1, z], [0, 1]])
 
-# <---+---< ZL
-#     Y
 def shunt(y):
+    """
+    <---+---< ZL
+        Y
+    """
     return np.matrix([[1, 0], [1/y, 1]])
 
-# <---+---Z---< ZL
-#     Y
 def halfpi(y, z):
+    """
+    <---+---Z---< ZL
+        Y
+    """
     return np.matrix([
         [ 1, z ],
         [ 1/y , 1+z/y ]
     ])
 
-# <---Z---+---<  ZL
-#         Y
 def halftee(z, y):
+    """
+    <---Z---+---<  ZL
+            Y
+    """
     return np.matrix([
         [ 1+z/y, z ],
         [ 1/y , 1 ]
     ])
 
-# <----O=======O---< ZL
 def tline(deg, zo=50):
+    """
+    <----O=======O---< ZL
+    """
     theta = np.deg2rad(deg)
     return np.matrix([
         [ np.cos(theta), 1j*zo*np.sin(theta)],
         [ 1j*np.sin(theta)/zo, np.cos(theta) ]
     ])
 
-# <---Z1---+---Z3---< ZL
-#          z2     
 def fulltee(z1, z2, z3):
+    """
+    <---Z1---+---Z3---< ZL
+             z2     
+    """
     return np.matrix([
         [ 1 + z1/z2, z1 + z3 + z1*z3/z2 ],
         [ 1/z2, 1 + z3/z2 ],
     ])
 
-# <---+---Z2---+---< ZL
-#     Z1       Z3
 def fullpi(z1, z2, z3):
+    """
+    <---+---Z2---+---< ZL
+        Z1       Z3
+    """
     return np.matrix([
         [ 1 + z2/z3, z2 ],
         [ (z1 + z2 + z3) / (z1*z3), 1 + z2/z1 ]
@@ -84,8 +98,10 @@ def halfpi2(z1, y1, z2, y2):
 # solvers whose results are passed into above ABCD functions
 #############################################################
 
-# its solution keeps the phase the same!
 def to_halfwave(zs, za, solution=0):
+    """
+    its solution keeps the phase the same!
+    """
     r1, r2 = zs.real, za.real
     x = np.sqrt(r1 * r2) * 1j
     if solution: x = -x
@@ -160,6 +176,15 @@ def to_series(za):
     return (x1 * 1j,)
 
 def to_stub(ZL, Z0=50, method='ps'):
+    """
+    -----------------/-----------|
+    main line Z0    /            ZL
+    ---------------/---/----l----|
+                  /   d
+                 /___/
+    type = 'ps','po','ss','so' for 
+    parallel/short, parallel/open, series/short, series/open
+    """
     GL = z2g(ZL, Z0)
     thL = np.angle(GL)
     if method == 'ps':
@@ -201,14 +226,18 @@ def impedance(*vectors):
 # helper functions
 ######################################
 
-# q for L network, or minimum q for tee or pi
 def qmin(zs, za):
+    """
+    q for L network, or minimum q for tee or pi
+    """
     rp = max(zs.real, za.real)
     rs = min(zs.real, za.real)
     return np.sqrt(rp / rs - 1)
 
-# minimum q for a LL network
 def qmin2(zs, za):
+    """
+    minimum q for a LL network
+    """
     rp = max(zs.real, za.real)
     rv = np.sqrt(rp * rs)
     return np.sqrt(rp / rv - 1)

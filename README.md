@@ -42,6 +42,7 @@ to_halfpi2(zs, za, solution=(0,0)):       match with a double shunt l-match
 to_halftee2(zs, za, solution=(0,0)):      match with a double series l-match
 to_fullpi2(zs, za, q=0, solution=(0,0)):  match with a pi section
 to_fulltee2(zs, za, q=0, solution=(0,0)): match with a tee section
+to_stub(ZL, Z0=50, method='ps'):          solves for a series stub match
 ```
 
 The third group of functions are basically helper functions

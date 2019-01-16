@@ -19,7 +19,7 @@ series(z):                  a component in series
 shunt(y):                   a component in parallel
 halfpi(y, z):               a shunt input l-match
 halftee(z, y):              a series input l-match
-tline(deg, zo=50):          a transmission line z of length deg
+tline(deg, zo=50, loss=0):  a transmission line z of length deg, loss in db
 fulltee(z1, z2, z3):        a tee section
 fullpi(z1, z2, z3):         a pi section
 halftee2(z1, y1, z2, y2):   a double series input l-match

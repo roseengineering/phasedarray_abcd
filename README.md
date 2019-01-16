@@ -54,6 +54,10 @@ shortstub(deg, zo):
 reactance_value(component, fd):
 component_value(impedance, fd):
 parallel(*impedances):
+z2g(z, zo=50):
+g2z(gm, zo=50):
+swr(gm):
+
 vec(e, i):
 emag(v):
 ephase(v):
@@ -99,9 +103,4 @@ z(0) = 9.9010-49.0099j
 i(0) = 0.7106 / 174.2894
 e(0) = 35.5317 / 95.7106
 ```
-
-
-
-
-
 

@@ -92,33 +92,39 @@ def halfpi2(z1, y1, z2, y2):
 # solvers whose results are passed into above ABCD functions
 #############################################################
 
-def to_halfwave(zs, za, solution=0):
+def to_halfwave(zs, za):
     """
-    its solution keeps the phase the same!
+    a halfwave tee or pi keeps the phase the same!
     """
     r1, r2 = zs.real, za.real
     x = np.sqrt(r1 * r2) * 1j
-    if solution: x = -x
-    return x, -x, x
+    return ([x, -x, x] * np.array([[1, -1]]).T).tolist() 
+    # def to_halfwave(zs, za, solution=0):
+    # if solution: x = -x
+    # return x, -x, x
     
-def to_halfpi(rin, za, solution=0):
+def to_halfpi(rin, za):
     ra, xa = za.real, za.imag
     xd = np.sqrt(ra * (rin - ra))
     if np.iscomplex(xd): raise ValueError
     x2 = np.array([-xa - xd, -xa + xd])
-    x2 = x2[solution]
     x1 = -(ra**2 + (x2 + xa)**2) / (x2 + xa)
-    return x1 * 1j, x2 * 1j
+    return np.transpose([x1 * 1j, x2 * 1j]).tolist()
+    # def to_halfpi(rin, za, solution=0):
+    # x2 = x2[solution]
+    # return x1 * 1j, x2 * 1j
 
-def to_halftee(rin, za, solution=0):
+def to_halftee(rin, za):
     ra, xa = za.real, za.imag
     xd = np.sqrt(rin * ra * (ra**2 + xa**2 - rin * ra))
     if np.iscomplex(xd): raise ValueError
     x2 = np.array([(-rin * xa + xd) / (rin - ra),
                    (-rin * xa - xd) / (rin - ra)])
-    x2 = x2[solution]
     x1 = -x2 * (ra**2 + xa * (x2 + xa)) / (ra**2 + (x2 + xa)**2)
-    return x1 * 1j, x2 * 1j
+    return np.transpose([x1 * 1j, x2 * 1j]).tolist()
+    # return x1 * 1j, x2 * 1j
+    # x2 = x2[solution]
+    # def to_halftee(rin, za, solution=0):
 
 def to_fullpi(deg, zo):
     zo = zo.real
@@ -134,32 +140,6 @@ def to_fulltee(deg, zo):
     x1 = zo * (1 - np.cos(theta)) / np.sin(theta)
     return x1 * 1j, x2 * 1j, x1 * 1j
 
-def to_halfpi2(zs, za, solution=(0,0)):
-    rin = np.sqrt(zs.real * za.real)
-    x = to_halftee(rin, zs, solution=solution[0])
-    y = to_halfpi(rin, za, solution=solution[1])
-    return x[1], x[0], y[0], y[1]
-
-def to_halftee2(zs, za, solution=(0,0)):
-    rin = np.sqrt(zs.real * za.real)
-    x = to_halfpi(rin, zs, solution=solution[0])
-    y = to_halftee(rin, za, solution=solution[1])
-    return x[1], x[0], y[0], y[1]
-    
-def to_fullpi2(zs, za, q=0, solution=(0,0)):
-    q = q or qmin(zs, za) + 1e-9
-    rin = max(zs.real, za.real) / (q**2 + 1)
-    x = to_halftee(rin, zs, solution=solution[0])
-    y = to_halftee(rin, za, solution=solution[1])
-    return x[1], x[0] + y[0], y[1]
-
-def to_fulltee2(zs, za, q=0, solution=(0,0)):
-    q = q or qmin(zs, za) + 1e-9
-    rin = min(zs.real, za.real) * (q**2 + 1)
-    x = to_halfpi(rin, zs, solution=solution[0])
-    y = to_halfpi(rin, za, solution=solution[1])
-    return x[1], parallel(x[0], y[0]), y[1]
-     
 def to_shunt(za):
     ra, xa = za.real, za.imag
     x1 = -(xa + ra**2 / xa)
@@ -168,6 +148,9 @@ def to_shunt(za):
 def to_series(za):
     x1 = -za.imag
     return (x1 * 1j,)
+
+
+# beta
 
 def to_stub(ZL, Z0=50, method='ps'):
     """
@@ -195,8 +178,34 @@ def to_stub(ZL, Z0=50, method='ps'):
         bd = np.arctan(-np.tan(2 * bl - thL) / 2)
     else:
         raise ValueError
-    return np.mod([bd, bl], np.pi) * 180 / np.pi
+    return (np.mod([bd, bl], np.pi) * 180 / np.pi).tolist()
 
+def to_halfpi2(zs, za, solution=(0,0)):
+    rin = np.sqrt(zs.real * za.real)
+    x = to_halftee(rin, zs, solution=solution[0])
+    y = to_halfpi(rin, za, solution=solution[1])
+    return x[1], x[0], y[0], y[1]
+
+def to_halftee2(zs, za, solution=(0,0)):
+    rin = np.sqrt(zs.real * za.real)
+    x = to_halfpi(rin, zs, solution=solution[0])
+    y = to_halftee(rin, za, solution=solution[1])
+    return x[1], x[0], y[0], y[1]
+    
+def to_fullpi2(zs, za, q=0, solution=(0,0)):
+    q = q or qmin(zs, za) + 1e-9
+    rin = max(zs.real, za.real) / (q**2 + 1)
+    x = to_halftee(rin, zs, solution=solution[0])
+    y = to_halftee(rin, za, solution=solution[1])
+    return x[1], x[0] + y[0], y[1]
+
+def to_fulltee2(zs, za, q=0, solution=(0,0)):
+    q = q or qmin(zs, za) + 1e-9
+    rin = min(zs.real, za.real) * (q**2 + 1)
+    x = to_halfpi(rin, zs, solution=solution[0])
+    y = to_halfpi(rin, za, solution=solution[1])
+    return x[1], parallel(x[0], y[0]), y[1]
+     
 
 # ABCD vector functions
 #####################################
@@ -261,7 +270,7 @@ def z2g(z, zo=50):
 def g2z(gm, zo=50):
     return zo * (1 + gm) / (1 - gm)
 
-def swr(gm)
+def swr(gm):
     return (1 + abs(gm)) / (1 - abs(gm))
 
 

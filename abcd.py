@@ -258,6 +258,12 @@ def parallel(*impedances):
 def z2g(z, zo=50):
     return (z - zo) / (z + zo)
 
+def g2z(gm, zo=50):
+    return zo * (1 + gm) / (1 - gm)
+
+def swr(gm)
+    return (1 + abs(gm)) / (1 - abs(gm))
+
 
 # print functions
 ####################################

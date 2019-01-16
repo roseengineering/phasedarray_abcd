@@ -99,9 +99,6 @@ def to_halfwave(zs, za):
     r1, r2 = zs.real, za.real
     x = np.sqrt(r1 * r2) * 1j
     return ([x, -x, x] * np.array([[1, -1]]).T).tolist() 
-    # def to_halfwave(zs, za, solution=0):
-    # if solution: x = -x
-    # return x, -x, x
     
 def to_halfpi(rin, za):
     ra, xa = za.real, za.imag
@@ -110,9 +107,6 @@ def to_halfpi(rin, za):
     x2 = np.array([-xa - xd, -xa + xd])
     x1 = -(ra**2 + (x2 + xa)**2) / (x2 + xa)
     return np.transpose([x1 * 1j, x2 * 1j]).tolist()
-    # def to_halfpi(rin, za, solution=0):
-    # x2 = x2[solution]
-    # return x1 * 1j, x2 * 1j
 
 def to_halftee(rin, za):
     ra, xa = za.real, za.imag
@@ -122,9 +116,6 @@ def to_halftee(rin, za):
                    (-rin * xa - xd) / (rin - ra)])
     x1 = -x2 * (ra**2 + xa * (x2 + xa)) / (ra**2 + (x2 + xa)**2)
     return np.transpose([x1 * 1j, x2 * 1j]).tolist()
-    # return x1 * 1j, x2 * 1j
-    # x2 = x2[solution]
-    # def to_halftee(rin, za, solution=0):
 
 def to_fullpi(deg, zo):
     zo = zo.real
@@ -219,11 +210,11 @@ def emag(v):
 def ephase(v):
     return float(np.angle(v[0], deg=True))
 
-def power(*vectors):
-    return sum(float(np.absolute(v[1])**2 * impedance(v).real) for v in vectors)
+def power(*vs):
+    return sum(float(np.absolute(v[1])**2 * impedance(v).real) for v in vs)
 
-def impedance(*vectors):
-    return 1 / sum(complex(v[1] / v[0]) for v in vectors)
+def impedance(*vs):
+    return 1 / sum(complex(v[1] / v[0]) for v in vs)
 
 
 # helper functions

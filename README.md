@@ -6,7 +6,6 @@ and from Capt. Paul Lee N6PL's "The Amateur Radio Vertical Antenna Handbook".
 
 What is a ABCD 2-port matrix?  See https://en.wikipedia.org/wiki/Two-port_network#ABCD-parameters 
 
-
 The first group of functions calculate the ABCD matrix.
 The impedance of the components are passed in order from the
 source side to the load side.
@@ -57,15 +56,20 @@ parallel(*impedances):
 z2g(z, zo=50):
 g2z(gm, zo=50):
 swr(gm):
-
-vec(e, i):
-emag(v):
-ephase(v):
-power(*vectors):
-impedance(*vectors):
+erms(power, z, zo=50):                     max rms voltage on coax
 ```
 
-The fourth group of functions are for printing results:
+The fourth group of functions work on ABCD vectors:
+
+```
+vec(e, i):                                 returns a ABCD vector for E, I
+emag(v):                                   returns the magnitude of E
+ephase(v):                                 returns the phase of E
+power(*vs):                                power of one or more lines together
+impedance(*vs):                            impedance of one or more lines together
+```
+
+The last group of functions are for printing results:
 
 ```
 polar(x):

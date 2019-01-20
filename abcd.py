@@ -264,9 +264,9 @@ def g2z(gm, zo=50):
 def swr(gm):
     return (1 + abs(gm)) / (1 - abs(gm))
 
-def epeak(power, z, zo=50):
+def erms(power, z, zo=50):
     gm = z2g(z, zo)
-    return np.sqrt(2 * power * zo * swr(gm))
+    return np.sqrt(power * zo * swr(gm))
 
 
 # print functions

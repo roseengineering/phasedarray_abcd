@@ -264,7 +264,10 @@ def g2z(gm, zo=50):
 def swr(gm):
     return (1 + abs(gm)) / (1 - abs(gm))
 
-def erms(power, z, zo=50):
+def emax(power, z, zo=50):
+    """
+    maximum voltage (rms) on transmission line
+    """
     gm = z2g(z, zo)
     return np.sqrt(power * zo * np.abs(swr(gm)))
 

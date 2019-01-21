@@ -56,7 +56,7 @@ def tline(deg, zo=50, loss=0):
     <----O=======O---< ZL
     loss is in db 
     """
-    theta = loss / 8.688 + 1j * np.deg2rad(deg)
+    theta = -loss / 8.688 + 1j * np.deg2rad(deg)
     return np.matrix([
         [ np.cosh(theta), zo * np.sinh(theta)],
         [ np.sinh(theta) / zo, np.cosh(theta) ]

@@ -54,7 +54,7 @@ def halftee(z, y):
 def tline(deg, zo=50, loss=0):
     """
     <----O=======O---< ZL
-    loss is in db per meter
+    loss is in db 
     """
     theta = loss / 8.688 + 1j * np.deg2rad(deg)
     return np.matrix([

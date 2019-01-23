@@ -98,9 +98,12 @@ def to_halfwave(zs, za):
     """
     r1, r2 = zs.real, za.real
     x = np.sqrt(r1 * r2) * 1j
-    return ([x, -x, x] * np.array([[1, -1]]).T).tolist() 
+    return [[x, -x, x], [-x, x, -x]]
     
 def to_halfpi(rin, za):
+    """
+    rin > za.real
+    """
     ra, xa = za.real, za.imag
     xd = np.sqrt(ra * (rin - ra))
     if np.iscomplex(xd): raise ValueError
@@ -109,6 +112,9 @@ def to_halfpi(rin, za):
     return np.transpose([x1 * 1j, x2 * 1j]).tolist()
 
 def to_halftee(rin, za):
+    """
+    rin < za.real
+    """
     ra, xa = za.real, za.imag
     xd = np.sqrt(rin * ra * (ra**2 + xa**2 - rin * ra))
     if np.iscomplex(xd): raise ValueError
@@ -122,23 +128,37 @@ def to_fullpi(deg, zo):
     theta = np.deg2rad(deg)
     x2 = zo * np.sin(theta)
     x1 = -zo * np.sin(theta) / (1 - np.cos(theta))
-    return x1 * 1j, x2 * 1j, x1 * 1j
+    return [x1 * 1j, x2 * 1j, x1 * 1j]
 
 def to_fulltee(deg, zo):
     zo = zo.real
     theta = np.deg2rad(deg)
     x2 = -zo / np.sin(theta)
     x1 = zo * (1 - np.cos(theta)) / np.sin(theta)
-    return x1 * 1j, x2 * 1j, x1 * 1j
+    return [x1 * 1j, x2 * 1j, x1 * 1j]
 
 def to_shunt(za):
     ra, xa = za.real, za.imag
     x1 = -(xa + ra**2 / xa)
-    return (x1 * 1j,)
+    return [x1 * 1j]
 
 def to_series(za):
     x1 = -za.imag
-    return (x1 * 1j,)
+    return [x1 * 1j]
+
+def to_resistive_halftee(rin, ra):
+    """
+    rin > ra
+    """
+    r2 = ra - np.sqrt(rin / (rin - ra))
+    r1 = rin - (ra * r2) / (ra + r2)
+    return [r1, r2]
+
+def to_resistive_halfpi(rin, ra):
+    """
+    rin < ra
+    """
+    return list(reversed(to_resistive_halftee(ra, rin)))
 
 
 # beta

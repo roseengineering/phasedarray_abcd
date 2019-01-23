@@ -158,7 +158,7 @@ def to_resistive_halfpi(rin, ra):
     """
     rin < ra
     """
-    return list(reversed(to_resistive_halftee(ra, rin)))
+    return to_resistive_halftee(ra, rin)[::-1]
 
 
 # beta

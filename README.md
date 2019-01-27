@@ -57,7 +57,6 @@ def parallel(*impedances):
 def z2g(z, zo=50):
 def g2z(gm, zo=50):
 def swr(gm):
-def emax(power, z, zo=50):      # maximum rms voltage on transmission line
 def s2p(z):
 ```
 
@@ -71,6 +70,7 @@ def emag(v):                      returns the magnitude of E
 def ephase(v):                    returns the phase of E
 def power(*vs):                   power of one or more lines together
 def impedance(*vs):               impedance of one or more lines together
+def emax(v, zo=50):               maximum rms voltage on transmission line
 ```
 
 The last group of functions are for printing results:

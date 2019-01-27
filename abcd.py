@@ -176,6 +176,10 @@ def power(*vs):                 # power of one or more lines together
 def impedance(*vs):             # impedance of one or more lines together
     return 1 / sum(complex(v[1] / v[0]) for v in vs)
 
+def emax(v, zo=50):         # maximum rms voltage on transmission line
+    gm = z2g(impedance(v), zo)
+    return np.sqrt(power(v) * zo * np.abs(swr(gm)))
+
 
 # helper functions
 ######################################
@@ -226,13 +230,6 @@ def g2z(gm, zo=50):
 
 def swr(gm):
     return (1 + abs(gm)) / (1 - abs(gm))
-
-def emax(power, z, zo=50):      # maximum rms voltage on transmission line
-    """
-    maximum voltage (rms) on transmission line
-    """
-    gm = z2g(z, zo)
-    return np.sqrt(power * zo * np.abs(swr(gm)))
 
 def s2p(z):
     """
@@ -320,6 +317,4 @@ def halftee2(z1, y1, z2, y2): # a double series input l-match
 
 def halfpi2(z1, y1, z2, y2):  # a double shunt input l-match
     return halfpi(z1, y1) * halfpi(z2, y2)
-
-
 

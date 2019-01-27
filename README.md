@@ -57,6 +57,8 @@ def z2g(z, zo=50):
 def g2z(gm, zo=50):
 def swr(gm):
 def s2p(z):
+def unwrap(theta):           # convert theta rads to between 0 and 2*pi
+def lmin(zl, zo=50):         # distance to voltage min/max
 ```
 
 The fourth group of functions work on ABCD vectors:

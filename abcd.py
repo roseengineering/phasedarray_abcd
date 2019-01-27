@@ -255,13 +255,12 @@ def s2p(z):                  # serial to parallel
 def unwrap(theta):           # convert theta rads to between 0 and 2*pi
     return np.mod(theta, 2 * np.pi)
 
-def lmin(zl, zo=50):         # tline distance to voltage min / max
+def lmin(zl, zo=50):         # distance to voltage min/max
     gm = z2g(zl, zo)
     th = np.angle(gm)
-    tau = 4 * np.pi
-    lm = np.rad2deg([ (th + np.pi) / tau, unwrap(th) / tau ])
+    lm = np.array([ (th + np.pi) / 2, unwrap(th) / 2 ])
     zm = np.array([ zo / swr(gm), zo * swr(gm) ])
-    return lm, zm
+    return np.rad2deg(lm), zm
 
 # print functions
 ####################################

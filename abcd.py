@@ -3,35 +3,35 @@ import numpy as np
 # generates ABCD matrix
 ######################################
 
-def auto(ratio, xt, k=1):
+def auto(ratio, xt, k=1):     # an autotransformer; 1:n is the ratio
     n = ratio / (1 - ratio)
     x1 = xt / (1 + n**2 + 2 * k * n)
     x2 = x1 * n**2
     xm = k * n * x1
     return fulltee((x1 + xm) * 1j, (x2 + xm) * 1j, -xm * 1j)
 
-def mutual(n, x1, k=1):
+def mutual(n, x1, k=1):       # a transformer; 1:n is the ratio
     x2 = x1 * n**2
     xm = k * n * x1
     return fulltee((x1 - xm) * 1j, xm * 1j, (x2 - xm) * 1j)
 
-def trans(n):
+def trans(n):                 # an ideal transformer; 1:n is the ratio
     return np.matrix([[ 1/n, 0], [0, n]])
     
-def series(z):
+def series(z):                # a component in series
     """
     <---Z---< ZL
     """
     return np.matrix([[1, z], [0, 1]])
 
-def shunt(y):
+def shunt(y):                 # a component in parallel
     """
     <---+---< ZL
         Y
     """
     return np.matrix([[1, 0], [1/y, 1]])
 
-def halfpi(y, z):
+def halfpi(y, z):             # a shunt input l-match
     """
     <---+---Z---< ZL
         Y
@@ -41,7 +41,7 @@ def halfpi(y, z):
         [ 1/y , 1+z/y ]
     ])
 
-def halftee(z, y):
+def halftee(z, y):            # a series input l-match
     """
     <---Z---+---<  ZL
             Y
@@ -51,7 +51,7 @@ def halftee(z, y):
         [ 1/y , 1 ]
     ])
 
-def tline(deg, zo=50, loss=0):
+def tline(deg, zo=50, loss=0): # a transmission line z of length deg, loss in db
     """
     <----O=======O---< ZL
     loss is in db 
@@ -62,7 +62,7 @@ def tline(deg, zo=50, loss=0):
         [ np.sinh(theta) / zo, np.cosh(theta) ]
     ])
 
-def fulltee(z1, z2, z3):
+def fulltee(z1, z2, z3):      # a tee section
     """
     <---Z1---+---Z3---< ZL
              z2     
@@ -72,7 +72,7 @@ def fulltee(z1, z2, z3):
         [ 1/z2, 1 + z3/z2 ],
     ])
 
-def fullpi(z1, z2, z3):
+def fullpi(z1, z2, z3):       # a pi section
     """
     <---+---Z2---+---< ZL
         Z1       Z3
@@ -82,17 +82,11 @@ def fullpi(z1, z2, z3):
         [ (z1 + z2 + z3) / (z1*z3), 1 + z2/z1 ]
     ])
 
-def halftee2(z1, y1, z2, y2):
-    return halftee(z1, y1) * halftee(z2, y2)
-
-def halfpi2(z1, y1, z2, y2):
-    return halfpi(z1, y1) * halfpi(z2, y2)
-
 
 # solvers whose results are passed into above ABCD functions
 #############################################################
 
-def to_halfwave(zs, za):
+def to_halfwave(zs, za):      # match with a 90 degree tee/pi section
     """
     a halfwave tee or pi keeps the phase the same!
     """
@@ -100,7 +94,7 @@ def to_halfwave(zs, za):
     x = np.sqrt(r1 * r2) * 1j
     return [[x, -x, x], [-x, x, -x]]
     
-def to_halfpi(rin, za):
+def to_halfpi(rin, za):       # match with a shunt input l-match
     """
     rin > za.real
     """
@@ -111,7 +105,7 @@ def to_halfpi(rin, za):
     x1 = -(ra**2 + (x2 + xa)**2) / (x2 + xa)
     return np.transpose([x1 * 1j, x2 * 1j]).tolist()
 
-def to_halftee(rin, za):
+def to_halftee(rin, za):      # match with a series input l-match
     """
     rin < za.real
     """
@@ -123,53 +117,38 @@ def to_halftee(rin, za):
     x1 = -x2 * (ra**2 + xa * (x2 + xa)) / (ra**2 + (x2 + xa)**2)
     return np.transpose([x1 * 1j, x2 * 1j]).tolist()
 
-def to_fullpi(deg, zo):
+def to_fullpi(deg, zo):       # shift phase with a pi section
     zo = zo.real
     theta = np.deg2rad(deg)
     x2 = zo * np.sin(theta)
     x1 = -zo * np.sin(theta) / (1 - np.cos(theta))
     return [x1 * 1j, x2 * 1j, x1 * 1j]
 
-def to_fulltee(deg, zo):
+def to_fulltee(deg, zo):      # shift phase with a tee section
     zo = zo.real
     theta = np.deg2rad(deg)
     x2 = -zo / np.sin(theta)
     x1 = zo * (1 - np.cos(theta)) / np.sin(theta)
     return [x1 * 1j, x2 * 1j, x1 * 1j]
 
-def to_shunt(za):
+def to_shunt(za):             # cancel reactance with a shunt section
     ra, xa = za.real, za.imag
     x1 = -(xa + ra**2 / xa)
     return [x1 * 1j]
 
-def to_series(za):
+def to_series(za):            # cancel reactance with a series section
     x1 = -za.imag
     return [x1 * 1j]
 
-def to_resistive_halftee(rin, ra):
-    """
-    rin > ra
-    """
-    r2 = ra - np.sqrt(rin / (rin - ra))
-    r1 = rin - (ra * r2) / (ra + r2)
-    return [r1, r2]
-
-def to_resistive_halfpi(rin, ra):
-    """
-    rin < ra
-    """
-    return to_resistive_halftee(ra, rin)[::-1]
-
-
-def to_stub(ZL, Z0=50, shorted=True):
+def to_stub(zl, zo=50, shorted=True): # match with a series line/parallel stub
     """
     -----------------/-----------|
-    main line Z0    /            ZL
+    main line zo    /            ZL
     ---------------/---/----l----|
                   /   d
                  /___/
     """
-    GL = z2g(ZL, Z0)
+    GL = z2g(zl, zo)
     thL = np.angle(GL)
     bl = thL / 2 + np.array([1, -1]) * np.arccos(-abs(GL)) / 2
     if shorted:
@@ -182,19 +161,19 @@ def to_stub(ZL, Z0=50, shorted=True):
 # ABCD vector functions
 #####################################
 
-def vec(e, i):
+def vec(e, i):                  # returns a ABCD vector for E, I
     return np.matrix([complex(e), complex(i)]).T
 
-def emag(v):
+def emag(v):                    # returns the magnitude of E
     return float(np.absolute(v[0]))
 
-def ephase(v):
+def ephase(v):                  # returns the phase of E
     return float(np.angle(v[0], deg=True))
 
-def power(*vs):
+def power(*vs):                 # power of one or more lines together
     return sum(float(np.absolute(v[1])**2 * impedance(v).real) for v in vs)
 
-def impedance(*vs):
+def impedance(*vs):             # impedance of one or more lines together
     return 1 / sum(complex(v[1] / v[0]) for v in vs)
 
 
@@ -248,7 +227,7 @@ def g2z(gm, zo=50):
 def swr(gm):
     return (1 + abs(gm)) / (1 - abs(gm))
 
-def emax(power, z, zo=50):
+def emax(power, z, zo=50):      # maximum rms voltage on transmission line
     """
     maximum voltage (rms) on transmission line
     """
@@ -294,30 +273,53 @@ def notation(x, precision=4):
 # fix: remove solution argument
 ########################################
 
-def to_halfpi2(zs, za, solution=(0,0)):
+def to_halfpi2(zs, za, solution=(0,0)):  # match with a double shunt l-match
     rin = np.sqrt(zs.real * za.real)
     x = to_halftee(rin, zs, solution=solution[0])
     y = to_halfpi(rin, za, solution=solution[1])
     return x[1], x[0], y[0], y[1]
 
-def to_halftee2(zs, za, solution=(0,0)):
+def to_halftee2(zs, za, solution=(0,0)): # match with a double series l-match
     rin = np.sqrt(zs.real * za.real)
     x = to_halfpi(rin, zs, solution=solution[0])
     y = to_halftee(rin, za, solution=solution[1])
     return x[1], x[0], y[0], y[1]
     
-def to_fullpi2(zs, za, q=0, solution=(0,0)):
+def to_fullpi2(zs, za, q=0, solution=(0,0)):   # match with a pi section
     q = q or qmin(zs, za) + 1e-9
     rin = max(zs.real, za.real) / (q**2 + 1)
     x = to_halftee(rin, zs, solution=solution[0])
     y = to_halftee(rin, za, solution=solution[1])
     return x[1], x[0] + y[0], y[1]
 
-def to_fulltee2(zs, za, q=0, solution=(0,0)):
+def to_fulltee2(zs, za, q=0, solution=(0,0)):  # match with a tee section
     q = q or qmin(zs, za) + 1e-9
     rin = min(zs.real, za.real) * (q**2 + 1)
     x = to_halfpi(rin, zs, solution=solution[0])
     y = to_halfpi(rin, za, solution=solution[1])
     return x[1], parallel(x[0], y[0]), y[1]
-     
+  
+# undocumented   
+
+def to_resistive_halftee(rin, ra):
+    """
+    rin > ra
+    """
+    r2 = ra - np.sqrt(rin / (rin - ra))
+    r1 = rin - (ra * r2) / (ra + r2)
+    return [r1, r2]
+
+def to_resistive_halfpi(rin, ra):
+    """
+    rin < ra
+    """
+    return to_resistive_halftee(ra, rin)[::-1]
+
+def halftee2(z1, y1, z2, y2): # a double series input l-match
+    return halftee(z1, y1) * halftee(z2, y2)
+
+def halfpi2(z1, y1, z2, y2):  # a double shunt input l-match
+    return halfpi(z1, y1) * halfpi(z2, y2)
+
+
 

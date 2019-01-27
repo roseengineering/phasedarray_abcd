@@ -11,72 +11,78 @@ The impedance of the components are passed in order from the
 source side to the load side.
 
 ```
-auto(ratio, xt, k=1):       an autotransformer; 1:n is the ratio
-mutual(n, x1, k=1):         a transformer; 1:n is the ratio
-trans(n):                   an ideal transformer; 1:n is the ratio
-series(z):                  a component in series
-shunt(y):                   a component in parallel
-halfpi(y, z):               a shunt input l-match
-halftee(z, y):              a series input l-match
-tline(deg, zo=50, loss=0):  a transmission line z of length deg, total loss in db
-fulltee(z1, z2, z3):        a tee section
-fullpi(z1, z2, z3):         a pi section
-halftee2(z1, y1, z2, y2):   a double series input l-match
-halfpi2(z1, y1, z2, y2):    a double shunt input l-match
+# generates ABCD matrix
+######################################
+def auto(ratio, xt, k=1):       an autotransformer; 1:n is the ratio
+def mutual(n, x1, k=1):         a transformer; 1:n is the ratio
+def trans(n):                   an ideal transformer; 1:n is the ratio
+def series(z):                  a component in series
+def shunt(y):                   a component in parallel
+def halfpi(y, z):               a shunt input l-match
+def halftee(z, y):              a series input l-match
+def tline(deg, zo=50, loss=0):  a transmission line z of length deg, loss in db
+def fulltee(z1, z2, z3):        a tee section
+def fullpi(z1, z2, z3):         a pi section
 ```
 
 The second group of functions solve various impedance matching problems.
 The solution parameter changes the components to their compliments.
 
 ```
-to_halfpi(rin, za, solution=0):           match with a shunt input l-match
-to_halftee(rin, za, solution=0):          match with a series input l-match
-to_halfwave(zs, za, solution=0):          match with a 90 degree tee/pi section
-to_shunt(za):                             cancel reactance with a shunt section
-to_series(za):                            cancel reactance with a series section
-to_fullpi(deg, zo):                       shift phase with a pi section
-to_fulltee(deg, zo):                      shift phase with a tee section
-to_halfpi2(zs, za, solution=(0,0)):       match with a double shunt l-match
-to_halftee2(zs, za, solution=(0,0)):      match with a double series l-match
-to_fullpi2(zs, za, q=0, solution=(0,0)):  match with a pi section
-to_fulltee2(zs, za, q=0, solution=(0,0)): match with a tee section
-to_stub(ZL, Z0=50, method='ps'):          solves for a series stub match
+# solvers whose results are passed into above ABCD functions
+#############################################################
+def to_halfwave(zs, za):        match with a 90 degree tee/pi section
+def to_halfpi(rin, za):         match with a shunt input l-match
+def to_halftee(rin, za):        match with a series input l-match
+def to_fullpi(deg, zo):         shift phase with a pi section
+def to_fulltee(deg, zo):        shift phase with a tee section
+def to_shunt(za):               cancel reactance with a shunt section
+def to_series(za):              cancel reactance with a series section
+def to_stub(zl, zo=50, shorted=True):  match with a series line/parallel stub
 ```
 
 The third group of functions are basically helper functions
 
 ```
-qmin(zs, za):
-qmin2(zs, za):
-openstub(deg, zo):
-shortstub(deg, zo):
-reactance_value(component, fd):
-component_value(impedance, fd):
-parallel(*impedances):
-z2g(z, zo=50):
-g2z(gm, zo=50):
-swr(gm):
-emax(power, z, zo=50):                     max rms voltage on coax
+# helper functions
+######################################
+def qmin(zs, za):
+def qmin2(zs, za):
+def open_stub(deg, zo=50):
+def shorted_stub(deg, zo=50):
+def reactance_value(component, fd):
+def component_value(impedance, fd):
+def qlosses(*impedances, q=200):
+def parallel(*impedances):
+def z2g(z, zo=50):
+def g2z(gm, zo=50):
+def swr(gm):
+def emax(power, z, zo=50):      # maximum rms voltage on transmission line
+def s2p(z):
 ```
 
 The fourth group of functions work on ABCD vectors:
 
 ```
-vec(e, i):                                 returns a ABCD vector for E, I
-emag(v):                                   returns the magnitude of E
-ephase(v):                                 returns the phase of E
-power(*vs):                                power of one or more lines together
-impedance(*vs):                            impedance of one or more lines together
+# ABCD vector functions
+#####################################
+def vec(e, i):                    returns a ABCD vector for E, I
+def emag(v):                      returns the magnitude of E
+def ephase(v):                    returns the phase of E
+def power(*vs):                   power of one or more lines together
+def impedance(*vs):               impedance of one or more lines together
 ```
 
 The last group of functions are for printing results:
 
 ```
-polar(x):
-status(v, note=0):
-reactance(values, fd, precision=4):
-component(values, fd, precision=4):
-notation(x, precision=4):
+# print functions
+####################################
+def polar(x):
+def status(v, note=0):
+def reactance(values, fd, precision=4):
+def component(values, fd, precision=4):
+def notation(x, precision=4):
 ```
 
 # Example

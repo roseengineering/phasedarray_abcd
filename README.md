@@ -38,7 +38,7 @@ def to_fullpi(deg, zo):         shift phase with a pi section
 def to_fulltee(deg, zo):        shift phase with a tee section
 def to_shunt(za):               cancel reactance with a shunt section
 def to_series(za):              cancel reactance with a series section
-def to_stub(zl, zo=50, shorted=True):  match with a series line/parallel stub
+def to_stub1(za, zo=50, shorted=True):  match with a stub-series input 
 ```
 
 The third group of functions are basically helper functions

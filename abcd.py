@@ -161,62 +161,23 @@ def to_resistive_halfpi(rin, ra):
     return to_resistive_halftee(ra, rin)[::-1]
 
 
-# beta
-
-def to_stub(ZL, Z0=50, method='ps'):
+def to_stub(ZL, Z0=50, shorted=True):
     """
     -----------------/-----------|
     main line Z0    /            ZL
     ---------------/---/----l----|
                   /   d
                  /___/
-    type = 'ps','po','ss','so' for 
-    parallel/short, parallel/open, series/short, series/open
     """
     GL = z2g(ZL, Z0)
     thL = np.angle(GL)
-    if method == 'ps':
-        bl = thL / 2 + np.array([1, -1]) * np.arccos(-abs(GL)) / 2
-        bd = np.arctan(-np.tan(2 * bl - thL) / 2)
-    elif method == 'po':
-        bl = thL / 2 + np.array([1, -1]) * np.arccos(-abs(GL)) / 2
-        bd = np.arccot(np.tan(2 * bl - thL) / 2)
-    elif method == 'ss':
-        bl = thL / 2 + np.array([1, -1]) * np.arccos(abs(GL)) / 2
-        bd = np.arccot(np.tan(2 * bl - thL) / 2)
-    elif method == 'so':
-        bl = thL / 2 + np.array([1, -1]) * np.arccos(abs(GL)) / 2
+    bl = thL / 2 + np.array([1, -1]) * np.arccos(-abs(GL)) / 2
+    if shorted:
         bd = np.arctan(-np.tan(2 * bl - thL) / 2)
     else:
-        raise ValueError
-    return (np.mod([bd, bl], np.pi) * 180 / np.pi).tolist()
+        bd = np.arctan(1 / (np.tan(2 * bl - thL) / 2))
+    return np.transpose(np.mod(np.rad2deg([bd, bl]), 360)).tolist()
 
-def to_halfpi2(zs, za, solution=(0,0)):
-    rin = np.sqrt(zs.real * za.real)
-    x = to_halftee(rin, zs, solution=solution[0])
-    y = to_halfpi(rin, za, solution=solution[1])
-    return x[1], x[0], y[0], y[1]
-
-def to_halftee2(zs, za, solution=(0,0)):
-    rin = np.sqrt(zs.real * za.real)
-    x = to_halfpi(rin, zs, solution=solution[0])
-    y = to_halftee(rin, za, solution=solution[1])
-    return x[1], x[0], y[0], y[1]
-    
-def to_fullpi2(zs, za, q=0, solution=(0,0)):
-    q = q or qmin(zs, za) + 1e-9
-    rin = max(zs.real, za.real) / (q**2 + 1)
-    x = to_halftee(rin, zs, solution=solution[0])
-    y = to_halftee(rin, za, solution=solution[1])
-    return x[1], x[0] + y[0], y[1]
-
-def to_fulltee2(zs, za, q=0, solution=(0,0)):
-    q = q or qmin(zs, za) + 1e-9
-    rin = min(zs.real, za.real) * (q**2 + 1)
-    x = to_halfpi(rin, zs, solution=solution[0])
-    y = to_halfpi(rin, za, solution=solution[1])
-    return x[1], parallel(x[0], y[0]), y[1]
-     
 
 # ABCD vector functions
 #####################################
@@ -256,11 +217,11 @@ def qmin2(zs, za):
     rv = np.sqrt(rp * rs)
     return np.sqrt(rp / rv - 1)
 
-def openstub(deg, zo):
+def open_stub(deg, zo=50):
     theta = np.deg2rad(deg)
-    return -1j * zo * np.cot(theta)
+    return -1j * zo / np.tan(theta)
 
-def shortstub(deg, zo):
+def shorted_stub(deg, zo=50):
     theta = np.deg2rad(deg)
     return 1j * zo * np.tan(theta)
 
@@ -271,6 +232,9 @@ def reactance_value(component, fd):
 def component_value(impedance, fd):
     w = 2 * np.pi * fd
     return 1 / (w * impedance.imag) if impedance.imag < 0 else impedance.imag / w  
+
+def qlosses(*impedances, q=200):
+    return [ z + (z.imag / q if z.imag > 0 else 0) for z in impedances ]
 
 def parallel(*impedances):
     return 1 / sum(1 / x for x in impedances)
@@ -290,6 +254,13 @@ def emax(power, z, zo=50):
     """
     gm = z2g(z, zo)
     return np.sqrt(power * zo * np.abs(swr(gm)))
+
+def s2p(z):
+    """
+    serial to parallel
+    """
+    zp = 1/z
+    return 1/zp.real - 1j/zp.imag
 
 
 # print functions
@@ -318,4 +289,35 @@ def notation(x, precision=4):
     p = int(exp // 3)
     value = (mant * 10**exp) / 10**(3 * p)
     return "%g%s%s" % (np.absolute(value), SUFFIX[p-4], 'F' if x < 0 else 'H')
+
+
+# fix: remove solution argument
+########################################
+
+def to_halfpi2(zs, za, solution=(0,0)):
+    rin = np.sqrt(zs.real * za.real)
+    x = to_halftee(rin, zs, solution=solution[0])
+    y = to_halfpi(rin, za, solution=solution[1])
+    return x[1], x[0], y[0], y[1]
+
+def to_halftee2(zs, za, solution=(0,0)):
+    rin = np.sqrt(zs.real * za.real)
+    x = to_halfpi(rin, zs, solution=solution[0])
+    y = to_halftee(rin, za, solution=solution[1])
+    return x[1], x[0], y[0], y[1]
+    
+def to_fullpi2(zs, za, q=0, solution=(0,0)):
+    q = q or qmin(zs, za) + 1e-9
+    rin = max(zs.real, za.real) / (q**2 + 1)
+    x = to_halftee(rin, zs, solution=solution[0])
+    y = to_halftee(rin, za, solution=solution[1])
+    return x[1], x[0] + y[0], y[1]
+
+def to_fulltee2(zs, za, q=0, solution=(0,0)):
+    q = q or qmin(zs, za) + 1e-9
+    rin = min(zs.real, za.real) * (q**2 + 1)
+    x = to_halfpi(rin, zs, solution=solution[0])
+    y = to_halfpi(rin, za, solution=solution[1])
+    return x[1], parallel(x[0], y[0]), y[1]
+     
 

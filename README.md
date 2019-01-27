@@ -50,7 +50,6 @@ def qmin(zs, za):
 def qmin2(zs, za):
 def open_stub(deg, zo=50):
 def shorted_stub(deg, zo=50):
-def reactance_value(component, fd):
 def component_value(impedance, fd):
 def qlosses(*impedances, q=200):
 def parallel(*impedances):
@@ -80,9 +79,8 @@ The last group of functions are for printing results:
 ####################################
 def polar(x):
 def status(v, note=0):
-def reactance(values, fd, precision=4):
 def component(values, fd, precision=4):
-def notation(x, precision=4):
+def notation(x, precision=4, units=None):
 ```
 
 # Example

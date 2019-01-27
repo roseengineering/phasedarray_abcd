@@ -228,11 +228,7 @@ def shorted_stub(deg, zo=50):
     theta = np.deg2rad(deg)
     return 1j * zo * np.tan(theta)
 
-def reactance_value(inductance, fd):
-    w = 2 * np.pi * fd * inductance
-    return 1j / w if inductance < 0 else 1j * w
-
-def component_value(z, fd):
+def component_value(impedance, fd):
     w = 2 * np.pi * fd
     x = impedance.imag
     return 1 / (w * x) if x < 0 else x / w
@@ -280,19 +276,18 @@ def status(v, note=0):
     print("e({}) = {}".format(note, polar(v[0])))
     print()
 
-def reactance(values, fd, precision=4):
-    return [ notation(reactance_value(l, fd), precision) for l in values ]
-
 def component(values, fd, precision=4):
-    return [ notation(component_value(z, fd), precision) for z in values ]
+    return [ notation(component_value(z, fd), precision, units='FH')
+             for z in values ]
 
-def notation(x, precision=4):
+def notation(x, precision=4, units=None):
     SUFFIX = ["p", "n", "u", "m", "", "k", "M", "G"]
     exp = np.floor(np.log10(np.absolute(x)))
     mant = round(x / 10**exp, precision-1)
     p = int(exp // 3)
     value = (mant * 10**exp) / 10**(3 * p)
-    return "%g%s%s" % (np.absolute(value), SUFFIX[p-4], 'F' if x < 0 else 'H')
+    unit = units[0 if x < 0 else 1] if units else ''
+    return "%g%s%s" % (np.absolute(value), SUFFIX[p-4], unit)
 
 
 # fix: remove solution argument
@@ -340,4 +335,10 @@ def halftee2(z1, y1, z2, y2): # a double series input l-match
 
 def halfpi2(z1, y1, z2, y2):  # a double shunt input l-match
     return halfpi(z1, y1) * halfpi(z2, y2)
+
+# def reactance_value(unit, fd):
+#    w = 2 * np.pi * fd
+#    return 1j / (w * unit) if unit < 0 else 1j * w * unit
+# def reactance(values, fd, precision=4):
+#    return [ notation(reactance_value(u, fd), precision) for u in values ]
 

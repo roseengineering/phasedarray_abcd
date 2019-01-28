@@ -33,8 +33,8 @@ and functions for printing results:
 ```
 # generates ABCD matrix
 ######################################
-def auto(ratio, xt, k=1, q=0): # an 1:n autotransformer
-def mutual(n, x1, k=1, q=0):   # a 1:n transformer
+def auto(ratio, xt, k=1, q=None): # an 1:n autotransformer
+def mutual(n, x1, k=1, q=None):   # a 1:n transformer
 def trans(n):                  # an ideal 1:n transformer
 def series(z):                 # a component in series
 def shunt(y):                  # a component in parallel

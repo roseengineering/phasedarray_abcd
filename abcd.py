@@ -1,10 +1,10 @@
 
 import numpy as np
 
-# generates ABCD matrix
+# generates ABCD matrices
 ######################################
 
-def auto(ratio, xt, k=1, q=0):    # an 1:n autotransformer
+def auto(ratio, xt, k=1, q=None):    # an 1:n autotransformer
     n = ratio / (1 - ratio)
     x1 = xt / (1 + n**2 + 2 * k * n)
     x2 = x1 * n**2
@@ -13,7 +13,7 @@ def auto(ratio, xt, k=1, q=0):    # an 1:n autotransformer
     if q: res = qlosses(res, q)
     return fulltee(*res)
 
-def mutual(n, x1, k=1, q=0):      # a 1:n transformer
+def mutual(n, x1, k=1, q=None):      # a 1:n transformer
     x2 = x1 * n**2
     xm = k * n * x1
     res = (x1 - xm) * 1j, xm * 1j, (x2 - xm) * 1j
@@ -87,7 +87,7 @@ def fullpi(z1, z2, z3):      # a pi section
     ])
 
 
-# solvers whose results are passed into above ABCD functions
+# solvers whose results are passed into the above ABCD functions
 #############################################################
 
 def to_halfwave(zs, za):     # match with a 90 degree tee/pi section
@@ -275,7 +275,7 @@ def g2z(gm, zo=50):
 def swr(gm):
     return (1 + abs(gm)) / (1 - abs(gm))
 
-def s2p(z):                  # serial to parallel
+def s2p(z):                  # series to parallel
     zp = 1 / z
     return 1 / zp.real - 1j / zp.imag
 

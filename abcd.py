@@ -4,7 +4,7 @@ import numpy as np
 # generates ABCD matrices
 ######################################
 
-def auto(ratio, xt, k=1, q=None):    # an 1:n autotransformer
+def auto(ratio, xt, k=1, q=None):    # a 1:n autotransformer
     n = ratio / (1 - ratio)
     x1 = xt / (1 + n**2 + 2 * k * n)
     x2 = x1 * n**2

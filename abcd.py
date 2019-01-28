@@ -141,7 +141,7 @@ def to_series(za):           # cancel reactance with a series section
     return [x1 * 1j]
 
 
-# experimental
+# experimental solvers
 ########################################
 
 def to_stub1(za, zo=50, shorted=True): # match with a stub-series input 
@@ -228,10 +228,10 @@ def emag(v):                 # returns the magnitude of E
 def ephase(v):               # returns the phase of E
     return float(np.angle(v[0], deg=True))
 
-def power(*vs):              # power of one or more lines together
+def power(*vs):              # power of one or more lines together in parallel
     return sum(float(np.absolute(v[1])**2 * impedance(v).real) for v in vs)
 
-def impedance(*vs):          # impedance of one or more lines together
+def impedance(*vs):          # impedance of one or more lines together in parallel
     return 1 / sum(complex(v[1] / v[0]) for v in vs)
 
 def emax(v, zo=50):          # maximum rms voltage on transmission line

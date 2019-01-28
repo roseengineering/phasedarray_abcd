@@ -54,7 +54,7 @@ def to_fulltee(deg, zo):     # shift phase with a tee section
 def to_shunt(za):            # cancel reactance with a shunt section
 def to_series(za):           # cancel reactance with a series section
 
-# experimental
+# experimental solvers
 ########################################
 def to_lmin(za, zo=50):      # distance to voltage min/max
 def to_stub1(za, zo=50, shorted=True): # match with a stub-series input 
@@ -67,8 +67,8 @@ def to_qwt3(za, z2, zo=50):
 def vec(e, i):               # returns a ABCD vector for E, I
 def emag(v):                 # returns the magnitude of E
 def ephase(v):               # returns the phase of E
-def power(*vs):              # power of one or more lines together
-def impedance(*vs):          # impedance of one or more lines together
+def power(*vs):              # power of one or more lines together in parallel
+def impedance(*vs):          # impedance of one or more lines together in parallel
 def emax(v, zo=50):          # maximum rms voltage on transmission line
 
 # helper functions

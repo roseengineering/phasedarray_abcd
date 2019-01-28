@@ -1,7 +1,6 @@
 
 import numpy as np
 
-
 # generates ABCD matrix
 ######################################
 
@@ -151,12 +150,12 @@ def to_stub1(za, zo=50, shorted=True): # match with a stub-series input
     """
     GL = z2g(za, zo)
     thL = np.angle(GL)
-    bl = thL / 2 + np.array([ 1, -1 ]) * np.arccos(-abs(GL)) / 2
+    bl = thL / 2 + np.array([1, -1]) * np.arccos(-abs(GL)) / 2
     if shorted:
         bd = np.arctan(-np.tan(2 * bl - thL) / 2)
     else:
         bd = np.arctan(1 / (np.tan(2 * bl - thL) / 2))
-    d = np.mod([ bd, bl ], 2 * np.pi)
+    d = np.mod([ bd, bl ], np.pi)
     d = np.rad2deg(d)
     return np.transpose(d).tolist()
 
@@ -278,7 +277,7 @@ def lmin(za, zo=50):         # distance to voltage min/max
     gm = z2g(za, zo)
     th = np.angle(gm)
     zm = np.array([ zo / swr(gm), zo * swr(gm) ])
-    lm = np.array([ (th + np.pi) / 2, np.mod(th, 2 * np.pi) / 2 ])
+    lm = np.array([ (th + np.pi) / 2, np.mod(th, np.pi) / 2 ])
     lm = np.rad2deg(lm)
     return lm, zm
 

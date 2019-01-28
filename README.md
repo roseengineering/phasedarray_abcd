@@ -4,14 +4,26 @@ The examples are taken from Gehrke K2BT's "Vertical Phased Arrays"
 series in Ham Radio Magazine, May-July 1983, October 1983, December 1983,
 and from Capt. Paul Lee N6PL's "The Amateur Radio Vertical Antenna Handbook".
 
-What is a ABCD 2-port matrix?  See https://en.wikipedia.org/wiki/Two-port_network#ABCD-parameters 
+If you don't know what ABCD 2-port functions are,  see
+https://en.wikipedia.org/wiki/Two-port_network#ABCD-parameters 
 
-The one group of functions calculate the ABCD matrix.
-The impedance of the components are passed in order from the
-source side to the load side.
-Another group of functions solve various impedance matching problems.
-The solution parameter changes the components to their compliments.
-The other groups are helper functions, functions that work on ABCD vectors,
+Below are the list of functions provided by the library.
+The first group of functions calculate the ABCD matrix itself.
+The impedance of the components that make up the
+matrix are passed to these functions in signal flow order, that
+is starting from the source side to the load side.  So 
+for a shunt input L match, the impedance of the shunt component 
+would be the first argument and the impedance of the series 
+would be the second.
+
+The next group of functions calculation solutions for various impedance 
+matching problems.  Their results are returned as a list.  This list can
+then be passed using the Python star notation to the appropriate
+ABCD 2-port function.  So, for example, the result of the input shunt 
+L-match solver function can be passed as is the to the input L-match
+ABCD matrix function.
+ 
+The other groups of functions are helper functions, functions that work on ABCD vectors,
 and functions for printing results:
 
 ```
@@ -40,6 +52,7 @@ def to_series(za):           # cancel reactance with a series section
 
 # experimental
 ########################################
+def to_lmin(za, zo=50):      # distance to voltage min/max
 def to_stub1(za, zo=50, shorted=True): # match with a stub-series input 
 def to_qwt1(za, zo=50):
 def to_qwt2(za, zo=50):
@@ -67,7 +80,6 @@ def z2g(z, zo=50):
 def g2z(gm, zo=50):
 def swr(gm):
 def s2p(z):                  # serial to parallel
-def lmin(za, zo=50):         # distance to voltage min/max
 
 # print functions
 ####################################

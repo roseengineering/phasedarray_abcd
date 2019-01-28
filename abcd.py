@@ -159,6 +159,13 @@ def to_stub1(za, zo=50, shorted=True): # match with a stub-series input
     d = np.rad2deg(d)
     return np.transpose(d).tolist()
 
+def to_lmin(za, zo=50):         # distance to voltage min/max
+    gm = z2g(za, zo)
+    th = np.angle(gm)
+    zm = np.array([ zo / swr(gm), zo * swr(gm) ])
+    lm = np.array([ (th + np.pi) / 2, np.mod(th, np.pi) / 2 ])
+    lm = np.rad2deg(lm)
+    return lm, zm
 
 def to_qwt1(za, zo=50):
     """
@@ -167,7 +174,7 @@ def to_qwt1(za, zo=50):
     ---------------==========---------|
                      l1=1/4     lm
     """
-    lm, zm = lmin(za, zo)
+    lm, zm = to_lmin(za, zo)
     return np.transpose([ np.sqrt(zo * zm), lm ]).tolist()
 
 def to_qwt2(za, zo=50):
@@ -272,14 +279,6 @@ def swr(gm):
 def s2p(z):                  # serial to parallel
     zp = 1 / z
     return 1 / zp.real - 1j / zp.imag
-
-def lmin(za, zo=50):         # distance to voltage min/max
-    gm = z2g(za, zo)
-    th = np.angle(gm)
-    zm = np.array([ zo / swr(gm), zo * swr(gm) ])
-    lm = np.array([ (th + np.pi) / 2, np.mod(th, np.pi) / 2 ])
-    lm = np.rad2deg(lm)
-    return lm, zm
 
 
 # print functions

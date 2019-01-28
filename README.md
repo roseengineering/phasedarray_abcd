@@ -1,11 +1,15 @@
 # ABCD 2-port functions for phasing vertical antenna arrays. 
 
-The examples are taken from Gehrke K2BT's "Vertical Phased Arrays"
-series in Ham Radio Magazine, May-July 1983, October 1983, December 1983,
-and from Capt. Paul Lee N6PL's "The Amateur Radio Vertical Antenna Handbook".
-
 If you don't know what ABCD 2-port functions are,  see
 https://en.wikipedia.org/wiki/Two-port_network#ABCD-parameters 
+
+The Jupyter notebook examples in the repo are taken from Gehrke K2BT's "Vertical Phased Arrays"
+series in Ham Radio Magazine, May-July 1983, October 1983, December 1983,
+and from Capt. Paul Lee N6PL's "The Amateur Radio Vertical Antenna Handbook".
+Most of the equations used for the library were taken from the K2BT article.
+The stub and quarter line solution functions were taken from
+Sophocles J. Orfanidis's 
+[http://eceweb1.rutgers.edu/~orfanidi/ewa/](Electromagnetic Waves and Antennas).
 
 Below are the list of functions provided by the library.
 The first group of functions calculate the ABCD matrix itself.
@@ -13,7 +17,7 @@ The impedance of the components that make up the
 matrix are passed to these functions in signal flow order, that
 is starting from the source side to the load side.  So 
 for a shunt input L match, the impedance of the shunt component 
-would be the first argument and the impedance of the series 
+would be the first argument and the impedance of the series component
 would be the second.
 
 The next group of functions calculation solutions for various impedance 

@@ -5,19 +5,19 @@ import numpy as np
 # generates ABCD matrix
 ######################################
 
-def auto(ratio, xt, k=1):    # an autotransformer; 1:n is the ratio
+def auto(ratio, xt, k=1):    # an 1:n autotransformer
     n = ratio / (1 - ratio)
     x1 = xt / (1 + n**2 + 2 * k * n)
     x2 = x1 * n**2
     xm = k * n * x1
     return fulltee((x1 + xm) * 1j, (x2 + xm) * 1j, -xm * 1j)
 
-def mutual(n, x1, k=1):      # a transformer; 1:n is the ratio
+def mutual(n, x1, k=1):      # a 1:n transformer
     x2 = x1 * n**2
     xm = k * n * x1
     return fulltee((x1 - xm) * 1j, xm * 1j, (x2 - xm) * 1j)
 
-def trans(n):                # an ideal transformer; 1:n is the ratio
+def trans(n):                # an ideal 1:n transformer
     return np.matrix([[ 1/n, 0], [0, n]])
     
 def series(z):               # a component in series
@@ -156,7 +156,9 @@ def to_stub1(za, zo=50, shorted=True): # match with a stub-series input
         bd = np.arctan(-np.tan(2 * bl - thL) / 2)
     else:
         bd = np.arctan(1 / (np.tan(2 * bl - thL) / 2))
-    return np.transpose(np.rad2deg(unwrap([ bd, bl ]))).tolist()
+    d = np.mod([ bd, bl ], 2 * np.pi)
+    d = np.rad2deg(d)
+    return np.transpose(d).tolist()
 
 
 def to_qwt1(za, zo=50):
@@ -164,7 +166,7 @@ def to_qwt1(za, zo=50):
     ---------------==========---------|
     main line zo       z1       zo    za
     ---------------==========---------|
-                   l1=1/4     lm
+                     l1=1/4     lm
     """
     lm, zm = lmin(za, zo)
     return np.transpose([ np.sqrt(zo * zm), lm ]).tolist()
@@ -182,7 +184,8 @@ def to_qwt2(za, zo=50):
     gl, bl = ya.real, ya.imag
     z1 = np.sqrt(zo / gl)
     z2 = 1 / bl
-    return z1, z2
+    return [[ z1, z2, 45 ],  # shorted
+            [ z1, z2, 135 ]] # opened
 
 def to_qwt3(za, z2, zo=50):
     """
@@ -190,16 +193,17 @@ def to_qwt3(za, z2, zo=50):
     main line zo       z1        |  za
     ---------------==========-|--|--|
                      L1=1/4   |  |
-                              |z2| d                
-                              |__| shorted or opened
+                              |z2| d=[shorted,opened]
+                              |__|
     """
     ya = 1 / za
     gl, bl = ya.real, ya.imag
-    z1 = sqrt(zo / gl);
-    ds = arctan(1 / (bl * z2)) / (2 * np.pi)
-    do = arctan(-bl * z2) / (2 * np.pi)
-    d = np.mod([ds, do], 0.5)
-    return z1, d
+    z1 = np.sqrt(zo / gl)
+    d = np.arctan([ 1 / (bl * z2), -bl * z2 ])
+    d = np.mod(d, np.pi)
+    d = np.rad2deg(d)
+    return [[ z1, d[0] ], # shorted
+            [ z1, d[1] ]] # opened
 
 
 # ABCD vector functions
@@ -267,18 +271,16 @@ def swr(gm):
     return (1 + abs(gm)) / (1 - abs(gm))
 
 def s2p(z):                  # serial to parallel
-    zp = 1/z
-    return 1/zp.real - 1j/zp.imag
-
-def unwrap(theta):           # convert theta rads to between 0 and 2*pi
-    return np.mod(theta, 2 * np.pi)
+    zp = 1 / z
+    return 1 / zp.real - 1j / zp.imag
 
 def lmin(za, zo=50):         # distance to voltage min/max
     gm = z2g(za, zo)
     th = np.angle(gm)
-    lm = np.array([ (th + np.pi) / 2, unwrap(th) / 2 ])
     zm = np.array([ zo / swr(gm), zo * swr(gm) ])
-    return np.rad2deg(lm), zm
+    lm = np.array([ (th + np.pi) / 2, np.mod(th, 2 * np.pi) / 2 ])
+    lm = np.rad2deg(lm)
+    return lm, zm
 
 
 # print functions
@@ -293,6 +295,7 @@ def status(v, note=0):
     print("i({}) = {}".format(note, polar(v[1])))
     print("e({}) = {}".format(note, polar(v[0])))
     print()
+    return v
 
 def component(values, fd, precision=4):
     return [ notation(component_value(z, fd), precision, units='FH')
@@ -306,8 +309,6 @@ def notation(x, precision=4, units=None):
     value = (mant * 10**exp) / 10**(3 * p)
     unit = units[0 if x < 0 else 1] if units else ''
     return "%g%s%s" % (np.absolute(value), SUFFIX[p-4], unit)
-
-
 
 
 # undocumented   

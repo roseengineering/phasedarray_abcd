@@ -82,7 +82,7 @@ def parallel(*impedances):
 def z2g(z, zo=50):
 def g2z(gm, zo=50):
 def swr(gm):
-def s2p(z):                  # serial to parallel
+def s2p(z):                  # series to parallel
 
 # print functions
 ####################################

@@ -20,11 +20,11 @@ for a shunt input L match, the impedance of the shunt component
 would be the first argument and the impedance of the series component
 would be the second.
 
-The next group of functions calculation solutions for various impedance 
+The next group of functions calculates solutions for various impedance 
 matching problems.  Their results are returned as a list.  This list can
-then be passed using the Python star notation to the appropriate
+then be passed directly using the Python star notation to the appropriate
 ABCD 2-port function.  So, for example, the result of the input shunt 
-L-match solver function can be passed as is the to the input L-match
+L-match solver function can be passed as is using the 'star' to the input L-match
 ABCD matrix function.
  
 The other groups of functions are helper functions, functions that work on ABCD vectors,

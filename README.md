@@ -33,16 +33,16 @@ and functions for printing results:
 ```
 # generates ABCD matrix
 ######################################
-def auto(ratio, xt, k=1):    # an 1:n autotransformer
-def mutual(n, x1, k=1):      # a 1:n transformer
-def trans(n):                # an ideal 1:n transformer
-def series(z):               # a component in series
-def shunt(y):                # a component in parallel
-def halfpi(y, z):            # a shunt input l-match
-def halftee(z, y):           # a series input l-match
+def auto(ratio, xt, k=1, q=0): # an 1:n autotransformer
+def mutual(n, x1, k=1, q=0):   # a 1:n transformer
+def trans(n):                  # an ideal 1:n transformer
+def series(z):                 # a component in series
+def shunt(y):                  # a component in parallel
+def halfpi(y, z):              # a shunt input l-match
+def halftee(z, y):             # a series input l-match
 def tline(deg, zo=50, loss=0): # a transmission line of length deg, db loss
-def fulltee(z1, z2, z3):     # a tee section
-def fullpi(z1, z2, z3):      # a pi section
+def fulltee(z1, z2, z3):       # a tee section
+def fullpi(z1, z2, z3):        # a pi section
 
 # solvers whose results are passed into above ABCD functions
 #############################################################
@@ -78,7 +78,7 @@ def qmin2(zs, za):           # minimum q for a LL network
 def opened_stub(deg, zo=50):
 def shorted_stub(deg, zo=50):
 def component_value(impedance, fd):
-def qlosses(*impedances, q=200):
+def qlosses(impedances, q=200):
 def parallel(*impedances):
 def z2g(z, zo=50):
 def g2z(gm, zo=50):

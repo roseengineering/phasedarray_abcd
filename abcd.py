@@ -4,17 +4,21 @@ import numpy as np
 # generates ABCD matrix
 ######################################
 
-def auto(ratio, xt, k=1):    # an 1:n autotransformer
+def auto(ratio, xt, k=1, q=0):    # an 1:n autotransformer
     n = ratio / (1 - ratio)
     x1 = xt / (1 + n**2 + 2 * k * n)
     x2 = x1 * n**2
     xm = k * n * x1
-    return fulltee((x1 + xm) * 1j, (x2 + xm) * 1j, -xm * 1j)
+    res = (x1 + xm) * 1j, (x2 + xm) * 1j, -xm * 1j
+    if q: res = qlosses(res, q)
+    return fulltee(*res)
 
-def mutual(n, x1, k=1):      # a 1:n transformer
+def mutual(n, x1, k=1, q=0):      # a 1:n transformer
     x2 = x1 * n**2
     xm = k * n * x1
-    return fulltee((x1 - xm) * 1j, xm * 1j, (x2 - xm) * 1j)
+    res = (x1 - xm) * 1j, xm * 1j, (x2 - xm) * 1j
+    if q: res = qlosses(res, q)
+    return fulltee(*res)
 
 def trans(n):                # an ideal 1:n transformer
     return np.matrix([[ 1/n, 0], [0, n]])
@@ -261,7 +265,7 @@ def component_value(impedance, fd):
     x = impedance.imag
     return 1 / (w * x) if x < 0 else x / w
 
-def qlosses(*impedances, q=200):
+def qlosses(impedances, q=200):
     return [ z + (z.imag / q if z.imag > 0 else 0) for z in impedances ]
 
 def parallel(*impedances):

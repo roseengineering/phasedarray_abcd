@@ -74,7 +74,6 @@ def emax(v, zo=50):          # maximum rms voltage on transmission line
 # helper functions
 ######################################
 def qmin(zs, za):            # q for L network, or minimum q for tee or pi
-def qmin2(zs, za):           # minimum q for a LL network
 def opened_stub(deg, zo=50):
 def shorted_stub(deg, zo=50):
 def component_value(impedance, fd):

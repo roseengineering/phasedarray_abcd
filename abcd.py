@@ -247,11 +247,6 @@ def qmin(zs, za):            # q for L network, or minimum q for tee or pi
     rs = min(zs.real, za.real)
     return np.sqrt(rp / rs - 1)
 
-def qmin2(zs, za):           # minimum q for a LL network
-    rp = max(zs.real, za.real)
-    rv = np.sqrt(rp * rs)
-    return np.sqrt(rp / rv - 1)
-
 def opened_stub(deg, zo=50):
     theta = np.deg2rad(deg)
     return -1j * zo / np.tan(theta)
@@ -317,14 +312,14 @@ def notation(x, precision=4, units=None):
 ########################################
 
 # fix
-def to_halfpi2(zs, za, solution=(0,0)):  # match with a double shunt l-match
+def to_halfpi2(zs, za, solution=(0,0)):  # match with a shunt LL-match
     rin = np.sqrt(zs.real * za.real)
     x = to_halftee(rin, zs, solution=solution[0])
     y = to_halfpi(rin, za, solution=solution[1])
     return x[1], x[0], y[0], y[1]
 
 # fix
-def to_halftee2(zs, za, solution=(0,0)): # match with a double series l-match
+def to_halftee2(zs, za, solution=(0,0)): # match with a series LL-match
     rin = np.sqrt(zs.real * za.real)
     x = to_halfpi(rin, zs, solution=solution[0])
     y = to_halftee(rin, za, solution=solution[1])
@@ -354,9 +349,14 @@ def to_resistive_halftee(rin, ra):    # rin > ra
 def to_resistive_halfpi(rin, ra):     # rin < ra
     return to_resistive_halftee(ra, rin)[::-1]
 
-def halftee2(z1, y1, z2, y2): # a double series input l-match
+def halftee2(z1, y1, z2, y2): # a series input LL-match
     return halftee(z1, y1) * halftee(z2, y2)
 
-def halfpi2(z1, y1, z2, y2):  # a double shunt input l-match
+def halfpi2(z1, y1, z2, y2):  # a shunt input LL-match
     return halfpi(z1, y1) * halfpi(z2, y2)
+
+def qmin2(zs, za):           # minimum q for a LL network
+    rp = max(zs.real, za.real)
+    rv = np.sqrt(rp * rs)
+    return np.sqrt(rp / rv - 1)
 

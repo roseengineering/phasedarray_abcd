@@ -20,20 +20,20 @@ def trans(n):                # an ideal transformer; 1:n is the ratio
     
 def series(z):               # a component in series
     """
-    <---Z---< ZL
+    <---Z---< ZA
     """
     return np.matrix([[1, z], [0, 1]])
 
 def shunt(y):                # a component in parallel
     """
-    <---+---< ZL
+    <---+---< ZA
         Y
     """
     return np.matrix([[1, 0], [1/y, 1]])
 
 def halfpi(y, z):            # a shunt input l-match
     """
-    <---+---Z---< ZL
+    <---+---Z---< ZA
         Y
     """
     return np.matrix([
@@ -43,7 +43,7 @@ def halfpi(y, z):            # a shunt input l-match
 
 def halftee(z, y):           # a series input l-match
     """
-    <---Z---+---<  ZL
+    <---Z---+---<  ZA
             Y
     """
     return np.matrix([
@@ -53,7 +53,7 @@ def halftee(z, y):           # a series input l-match
 
 def tline(deg, zo=50, loss=0): # a transmission line of length deg, db loss
     """
-    <----O=======O---< ZL
+    <----O=======O---< ZA
     """
     theta = -loss / 8.688 + 1j * np.deg2rad(deg)
     return np.matrix([
@@ -63,7 +63,7 @@ def tline(deg, zo=50, loss=0): # a transmission line of length deg, db loss
 
 def fulltee(z1, z2, z3):     # a tee section
     """
-    <---Z1---+---Z3---< ZL
+    <---Z1---+---Z3---< ZA
              z2     
     """
     return np.matrix([
@@ -73,7 +73,7 @@ def fulltee(z1, z2, z3):     # a tee section
 
 def fullpi(z1, z2, z3):      # a pi section
     """
-    <---+---Z2---+---< ZL
+    <---+---Z2---+---< ZA
         Z1       Z3
     """
     return np.matrix([
@@ -135,6 +135,9 @@ def to_series(za):           # cancel reactance with a series section
     x1 = -za.imag
     return [x1 * 1j]
 
+# experimental
+########################################
+
 def to_stub1(za, zo=50, shorted=True): # match with a stub-series input 
     """
     -----------------/-----------|
@@ -166,22 +169,34 @@ def to_qwt1(za, zo=50):
 def to_qwt2(za, zo=50):
     """
     ---------------==========----|--|
-    main line Z0       Z1        |  ZL
+    main line zo       z1        |  za
     ---------------==========-|--|--|
                      L1=1/4   |  |
-                              |Z2| L2=1/8 or 3/8                
+                              |z2| L2=1/8 or 3/8
                               |__| shorted or opened
     """
+    ya = 1 / za
+    gl, bl = ya.real, ya.imag
+    z1 = np.sqrt(zo / gl)
+    z2 = 1 / bl
+    return z1, z2
 
 def to_qwt3(za, z2, zo=50):
     """
     ---------------==========----|--|
-    main line Z0       Z1        |  ZL
+    main line zo       z1        |  za
     ---------------==========-|--|--|
                      L1=1/4   |  |
-                              |Z2| d                
+                              |z2| d                
                               |__| shorted or opened
     """
+    ya = 1 / za
+    gl, bl = ya.real, ya.imag
+    z1 = sqrt(zo / gl);
+    ds = arctan(1 / (bl * z2)) / (2 * np.pi)
+    do = arctan(-bl * z2) / (2 * np.pi)
+    d = np.mod([ds, do], 0.5)
+    return z1, d
 
 
 # ABCD vector functions
@@ -255,8 +270,8 @@ def s2p(z):                  # serial to parallel
 def unwrap(theta):           # convert theta rads to between 0 and 2*pi
     return np.mod(theta, 2 * np.pi)
 
-def lmin(zl, zo=50):         # distance to voltage min/max
-    gm = z2g(zl, zo)
+def lmin(za, zo=50):         # distance to voltage min/max
+    gm = z2g(za, zo)
     th = np.angle(gm)
     lm = np.array([ (th + np.pi) / 2, unwrap(th) / 2 ])
     zm = np.array([ zo / swr(gm), zo * swr(gm) ])
@@ -289,7 +304,9 @@ def notation(x, precision=4, units=None):
     return "%g%s%s" % (np.absolute(value), SUFFIX[p-4], unit)
 
 
-# fix: remove solution argument
+
+
+# to fix: remove solution argument
 ########################################
 
 def to_halfpi2(zs, za, solution=(0,0)):  # match with a double shunt l-match
@@ -334,10 +351,4 @@ def halftee2(z1, y1, z2, y2): # a double series input l-match
 
 def halfpi2(z1, y1, z2, y2):  # a double shunt input l-match
     return halfpi(z1, y1) * halfpi(z2, y2)
-
-# def reactance_value(unit, fd):
-#    w = 2 * np.pi * fd
-#    return 1j / (w * unit) if unit < 0 else 1j * w * unit
-# def reactance(values, fd, precision=4):
-#    return [ notation(reactance_value(u, fd), precision) for u in values ]
 

@@ -6,48 +6,58 @@ and from Capt. Paul Lee N6PL's "The Amateur Radio Vertical Antenna Handbook".
 
 What is a ABCD 2-port matrix?  See https://en.wikipedia.org/wiki/Two-port_network#ABCD-parameters 
 
-The first group of functions calculate the ABCD matrix.
+The one group of functions calculate the ABCD matrix.
 The impedance of the components are passed in order from the
 source side to the load side.
+Another group of functions solve various impedance matching problems.
+The solution parameter changes the components to their compliments.
+The other groups are helper functions, functions that work on ABCD vectors,
+and functions for printing results:
 
 ```
 # generates ABCD matrix
 ######################################
-def auto(ratio, xt, k=1):       an autotransformer; 1:n is the ratio
-def mutual(n, x1, k=1):         a transformer; 1:n is the ratio
-def trans(n):                   an ideal transformer; 1:n is the ratio
-def series(z):                  a component in series
-def shunt(y):                   a component in parallel
-def halfpi(y, z):               a shunt input l-match
-def halftee(z, y):              a series input l-match
-def tline(deg, zo=50, loss=0):  a transmission line z of length deg, loss in db
-def fulltee(z1, z2, z3):        a tee section
-def fullpi(z1, z2, z3):         a pi section
-```
+def auto(ratio, xt, k=1):    # an autotransformer; 1:n is the ratio
+def mutual(n, x1, k=1):      # a transformer; 1:n is the ratio
+def trans(n):                # an ideal transformer; 1:n is the ratio
+def series(z):               # a component in series
+def shunt(y):                # a component in parallel
+def halfpi(y, z):            # a shunt input l-match
+def halftee(z, y):           # a series input l-match
+def tline(deg, zo=50, loss=0): # a transmission line of length deg, db loss
+def fulltee(z1, z2, z3):     # a tee section
+def fullpi(z1, z2, z3):      # a pi section
 
-The second group of functions solve various impedance matching problems.
-The solution parameter changes the components to their compliments.
-
-```
-# solvers whose results are passed into above ABCD functions
+# solvers (pass these results to the above ABCD functions)
 #############################################################
-def to_halfwave(zs, za):        match with a 90 degree tee/pi section
-def to_halfpi(rin, za):         match with a shunt input l-match
-def to_halftee(rin, za):        match with a series input l-match
-def to_fullpi(deg, zo):         shift phase with a pi section
-def to_fulltee(deg, zo):        shift phase with a tee section
-def to_shunt(za):               cancel reactance with a shunt section
-def to_series(za):              cancel reactance with a series section
-def to_stub1(za, zo=50, shorted=True):  match with a stub-series input 
-```
+def to_halfwave(zs, za):     # match with a 90 degree tee/pi section
+def to_halfpi(rin, za):      # match with a shunt input l net, rin > za.real
+def to_halftee(rin, za):     # match with a series input l net, rin < za.real
+def to_fullpi(deg, zo):      # shift phase with a pi section
+def to_fulltee(deg, zo):     # shift phase with a tee section
+def to_shunt(za):            # cancel reactance with a shunt section
+def to_series(za):           # cancel reactance with a series section
 
-The third group of functions are basically helper functions
+# experimental
+########################################
+def to_stub1(za, zo=50, shorted=True): # match with a stub-series input 
+def to_qwt1(za, zo=50):
+def to_qwt2(za, zo=50):
+def to_qwt3(za, z2, zo=50):
 
-```
+# ABCD vector functions
+#####################################
+def vec(e, i):               # returns a ABCD vector for E, I
+def emag(v):                 # returns the magnitude of E
+def ephase(v):               # returns the phase of E
+def power(*vs):              # power of one or more lines together
+def impedance(*vs):          # impedance of one or more lines together
+def emax(v, zo=50):          # maximum rms voltage on transmission line
+
 # helper functions
 ######################################
-def qmin(zs, za):
-def qmin2(zs, za):
+def qmin(zs, za):            # q for L network, or minimum q for tee or pi
+def qmin2(zs, za):           # minimum q for a LL network
 def open_stub(deg, zo=50):
 def shorted_stub(deg, zo=50):
 def component_value(impedance, fd):
@@ -56,27 +66,10 @@ def parallel(*impedances):
 def z2g(z, zo=50):
 def g2z(gm, zo=50):
 def swr(gm):
-def s2p(z):
+def s2p(z):                  # serial to parallel
 def unwrap(theta):           # convert theta rads to between 0 and 2*pi
-def lmin(zl, zo=50):         # distance to voltage min/max
-```
+def lmin(za, zo=50):         # distance to voltage min/max
 
-The fourth group of functions work on ABCD vectors:
-
-```
-# ABCD vector functions
-#####################################
-def vec(e, i):                    returns a ABCD vector for E, I
-def emag(v):                      returns the magnitude of E
-def ephase(v):                    returns the phase of E
-def power(*vs):                   power of one or more lines together
-def impedance(*vs):               impedance of one or more lines together
-def emax(v, zo=50):               maximum rms voltage on transmission line
-```
-
-The last group of functions are for printing results:
-
-```
 # print functions
 ####################################
 def polar(x):

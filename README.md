@@ -1,7 +1,7 @@
 # ABCD 2-port functions for phasing vertical antenna arrays. 
 
 If you don't know what ABCD 2-port functions are,  see
-https://en.wikipedia.org/wiki/Two-port_network#ABCD-parameters 
+https://en.wikipedia.org/wiki/Two-port_network#ABCD-parameters.
 
 The Jupyter notebook examples in the repo are taken from Gehrke K2BT's "Vertical Phased Arrays"
 series in Ham Radio Magazine, May-July 1983, October 1983, December 1983,

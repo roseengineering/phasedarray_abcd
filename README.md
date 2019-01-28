@@ -44,7 +44,7 @@ def tline(deg, zo=50, loss=0): # a transmission line of length deg, db loss
 def fulltee(z1, z2, z3):       # a tee section
 def fullpi(z1, z2, z3):        # a pi section
 
-# solvers whose results are passed into above ABCD functions
+# solvers whose results are passed into the above ABCD functions
 #############################################################
 def to_halfwave(zs, za):     # match with a 90 degree tee/pi section
 def to_halfpi(rin, za):      # match with a shunt input l net, rin > za.real

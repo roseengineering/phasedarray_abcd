@@ -9,7 +9,7 @@ and from Capt. Paul Lee N6PL's "The Amateur Radio Vertical Antenna Handbook".
 Most of the equations used for the library were taken from the K2BT article.
 The stub and quarter line solution functions were taken from
 Sophocles J. Orfanidis's
-(Electromagnetic Waves and Antennas)[http://eceweb1.rutgers.edu/~orfanidi/ewa/].
+[Electromagnetic Waves and Antennas](http://eceweb1.rutgers.edu/~orfanidi/ewa/).
 
 Below are the list of functions provided by the library.
 The first group of functions calculate the ABCD matrix itself.

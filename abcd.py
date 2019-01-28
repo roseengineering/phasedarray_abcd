@@ -1,4 +1,6 @@
+
 import numpy as np
+
 
 # generates ABCD matrix
 ######################################
@@ -135,6 +137,7 @@ def to_series(za):           # cancel reactance with a series section
     x1 = -za.imag
     return [x1 * 1j]
 
+
 # experimental
 ########################################
 
@@ -172,8 +175,8 @@ def to_qwt2(za, zo=50):
     main line zo       z1        |  za
     ---------------==========-|--|--|
                      L1=1/4   |  |
-                              |z2| L2=1/8 or 3/8
-                              |__| shorted or opened
+                              |z2| L2=1/8 shorted or
+                              |__|    3/8 opened
     """
     ya = 1 / za
     gl, bl = ya.real, ya.imag
@@ -235,7 +238,7 @@ def qmin2(zs, za):           # minimum q for a LL network
     rv = np.sqrt(rp * rs)
     return np.sqrt(rp / rv - 1)
 
-def open_stub(deg, zo=50):
+def opened_stub(deg, zo=50):
     theta = np.deg2rad(deg)
     return -1j * zo / np.tan(theta)
 
@@ -277,6 +280,7 @@ def lmin(za, zo=50):         # distance to voltage min/max
     zm = np.array([ zo / swr(gm), zo * swr(gm) ])
     return np.rad2deg(lm), zm
 
+
 # print functions
 ####################################
 
@@ -306,21 +310,24 @@ def notation(x, precision=4, units=None):
 
 
 
-# to fix: remove solution argument
+# undocumented   
 ########################################
 
+# fix
 def to_halfpi2(zs, za, solution=(0,0)):  # match with a double shunt l-match
     rin = np.sqrt(zs.real * za.real)
     x = to_halftee(rin, zs, solution=solution[0])
     y = to_halfpi(rin, za, solution=solution[1])
     return x[1], x[0], y[0], y[1]
 
+# fix
 def to_halftee2(zs, za, solution=(0,0)): # match with a double series l-match
     rin = np.sqrt(zs.real * za.real)
     x = to_halfpi(rin, zs, solution=solution[0])
     y = to_halftee(rin, za, solution=solution[1])
     return x[1], x[0], y[0], y[1]
     
+# fix
 def to_fullpi2(zs, za, q=0, solution=(0,0)):   # match with a pi section
     q = q or qmin(zs, za) + 1e-9
     rin = max(zs.real, za.real) / (q**2 + 1)
@@ -328,6 +335,7 @@ def to_fullpi2(zs, za, q=0, solution=(0,0)):   # match with a pi section
     y = to_halftee(rin, za, solution=solution[1])
     return x[1], x[0] + y[0], y[1]
 
+# fix
 def to_fulltee2(zs, za, q=0, solution=(0,0)):  # match with a tee section
     q = q or qmin(zs, za) + 1e-9
     rin = min(zs.real, za.real) * (q**2 + 1)
@@ -335,9 +343,6 @@ def to_fulltee2(zs, za, q=0, solution=(0,0)):  # match with a tee section
     y = to_halfpi(rin, za, solution=solution[1])
     return x[1], parallel(x[0], y[0]), y[1]
   
-# undocumented   
-########################################
-
 def to_resistive_halftee(rin, ra):    # rin > ra
     r2 = ra - np.sqrt(rin / (rin - ra))
     r1 = rin - (ra * r2) / (ra + r2)

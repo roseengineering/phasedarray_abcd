@@ -23,7 +23,7 @@ would be the second.
 The next group calculates solutions for various impedance 
 matching problems.  Their results are returned as a list.  This list can
 then be passed directly using the Python 'star' notation to the appropriate
-ABCD 2-port function.  So, for example, the result of the input shunt 
+ABCD matrix function.  So, for example, the result of the input shunt 
 L-match solver function can be passed as is using the 'star' notation
 to the input L-match
 ABCD matrix function.

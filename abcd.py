@@ -4,19 +4,6 @@ import numpy as np
 # generates ABCD matrices
 ######################################
 
-def auto(ratio, xt, k=1):    # a 1:n autotransformer
-    n = ratio / (1 - ratio)
-    x1 = 1j * xt / (1 + n**2 + 2 * k * n)
-    x2 = x1 * n**2
-    xm = k * n * x1
-    return fulltee(x1 + xm, x2 + xm, -xm)
-
-def mutual(n, x1, k=1):      # a 1:n transformer
-    x1 = 1j * x1
-    x2 = x1 * n**2
-    xm = k * n * x1
-    return fulltee(x1 - xm, xm, x2 - xm)
-
 def trans(n):                # an ideal 1:n transformer
     return np.matrix([[ 1/n, 0], [0, n]])
     
@@ -86,6 +73,18 @@ def fullpi(z1, z2, z3):      # a pi section
 
 # solvers whose results are passed into the above ABCD functions
 #############################################################
+
+def to_auto(ratio, xt, k=1): # a 1:n autotransformer, pass to fulltee
+    n = ratio / (1 - ratio)
+    x1 = xt / (1 + n**2 + 2 * k * n)
+    x2 = x1 * n**2
+    xm = k * n * x1
+    return [(x1 + xm) * 1j, (x2 + xm) * 1j, -xm * 1j]
+
+def to_mutual(n, x1, k=1):   # a 1:n transformer, pass to fulltee
+    x2 = x1 * n**2
+    xm = k * n * x1
+    return [(x1 - xm) * 1j, xm * 1j, (x2 - xm) * 1j]
 
 def to_halfwave(zs, za):     # match with a 90 degree tee/pi section
     """

@@ -4,23 +4,37 @@ import numpy as np
 # generates ABCD matrices
 ######################################
 
-def trans(n):                # an ideal 1:n transformer
+def auto(ratio, xt, k=1):       # a 1:n autotransformer
+    n = ratio / (1 - ratio)
+    x1 = xt / (1 + n**2 + 2 * k * n)
+    x2 = x1 * n**2
+    xm = k * n * x1
+    return fulltee((x1 + xm) * 1j, (x2 + xm) * 1j, -xm * 1j)
+
+def mutual(n, x1, k=1, q=None): # a 1:n transformer
+    x2 = x1 * n**2
+    xm = k * n * x1
+    r1 = x1 / q if q else 0
+    r2 = x2 / q if q else 0
+    return fulltee(r1 + (x1 - xm) * 1j, xm * 1j, r2 + (x2 - xm) * 1j)
+
+def trans(n):                   # an ideal 1:n transformer
     return np.matrix([[ 1/n, 0], [0, n]])
     
-def series(z):               # a component in series
+def series(z):                  # a component in series
     """
     <---Z---< ZA
     """
     return np.matrix([[1, z], [0, 1]])
 
-def shunt(y):                # a component in parallel
+def shunt(y):                   # a component in parallel
     """
     <---+---< ZA
         Y
     """
     return np.matrix([[1, 0], [1/y, 1]])
 
-def halfpi(y, z):            # a shunt input l-match
+def halfpi(y, z):               # a shunt input l-match
     """
     <---+---Z---< ZA
         Y
@@ -30,7 +44,7 @@ def halfpi(y, z):            # a shunt input l-match
         [ 1/y , 1+z/y ]
     ])
 
-def halftee(z, y):           # a series input l-match
+def halftee(z, y):              # a series input l-match
     """
     <---Z---+---<  ZA
             Y
@@ -40,7 +54,7 @@ def halftee(z, y):           # a series input l-match
         [ 1/y , 1 ]
     ])
 
-def tline(deg, zo=50, loss=0): # a transmission line of length deg, db loss
+def tline(deg, zo=50, loss=0):  # a transmission line of length deg, db loss
     """
     <----O=======O---< ZA
     """
@@ -50,7 +64,7 @@ def tline(deg, zo=50, loss=0): # a transmission line of length deg, db loss
         [ np.sinh(theta) / zo, np.cosh(theta) ]
     ])
 
-def fulltee(z1, z2, z3):     # a tee section
+def fulltee(z1, z2, z3):        # a tee section
     """
     <---Z1---+---Z3---< ZA
              z2     
@@ -60,7 +74,7 @@ def fulltee(z1, z2, z3):     # a tee section
         [ 1/z2, 1 + z3/z2 ],
     ])
 
-def fullpi(z1, z2, z3):      # a pi section
+def fullpi(z1, z2, z3):         # a pi section
     """
     <---+---Z2---+---< ZA
         Z1       Z3
@@ -73,18 +87,6 @@ def fullpi(z1, z2, z3):      # a pi section
 
 # solvers whose results are passed into the above ABCD functions
 #############################################################
-
-def to_auto(ratio, xt, k=1): # a 1:n autotransformer, pass to fulltee
-    n = ratio / (1 - ratio)
-    x1 = xt / (1 + n**2 + 2 * k * n)
-    x2 = x1 * n**2
-    xm = k * n * x1
-    return [(x1 + xm) * 1j, (x2 + xm) * 1j, -xm * 1j]
-
-def to_mutual(n, x1, k=1):   # a 1:n transformer, pass to fulltee
-    x2 = x1 * n**2
-    xm = k * n * x1
-    return [(x1 - xm) * 1j, xm * 1j, (x2 - xm) * 1j]
 
 def to_halfwave(zs, za):     # match with a 90 degree tee/pi section
     """

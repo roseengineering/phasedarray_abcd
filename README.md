@@ -34,6 +34,8 @@ and functions for printing results:
 ```
 # generates ABCD matrix
 ######################################
+def auto(ratio, xt, k=1):      # a 1:n autotransformer, pass to fulltee
+def mutual(n, x1, k=1, q=None):# a 1:n transformer, pass to fulltee
 def trans(n):                  # an ideal 1:n transformer
 def series(z):                 # a component in series
 def shunt(y):                  # a component in parallel
@@ -45,8 +47,6 @@ def fullpi(z1, z2, z3):        # a pi section
 
 # solvers whose results are passed into the above ABCD functions
 #############################################################
-def to_auto(ratio, xt, k=1): # a 1:n autotransformer, pass to fulltee
-def to_mutual(n, x1, k=1):   # a 1:n transformer, pass to fulltee
 def to_halfwave(zs, za):     # match with a 90 degree tee/pi section
 def to_halfpi(rin, za):      # match with a shunt input l net, rin > za.real
 def to_halftee(rin, za):     # match with a series input l net, rin < za.real

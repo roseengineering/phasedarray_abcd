@@ -306,24 +306,21 @@ def notation(x, precision=4, units=None):
     return "%g%s%s" % (np.absolute(value), SUFFIX[p-4], unit)
 
 
-# undocumented   
+# fix
 ########################################
 
-# fix
 def to_halfpi2(zs, za, solution=(0,0)):  # match with a shunt LL-match
     rin = np.sqrt(zs.real * za.real)
     x = to_halftee(rin, zs, solution=solution[0])
     y = to_halfpi(rin, za, solution=solution[1])
     return x[1], x[0], y[0], y[1]
 
-# fix
 def to_halftee2(zs, za, solution=(0,0)): # match with a series LL-match
     rin = np.sqrt(zs.real * za.real)
     x = to_halfpi(rin, zs, solution=solution[0])
     y = to_halftee(rin, za, solution=solution[1])
     return x[1], x[0], y[0], y[1]
     
-# fix
 def to_fullpi2(zs, za, q=0, solution=(0,0)):   # match with a pi section
     q = q or qmin(zs, za) + 1e-9
     rin = max(zs.real, za.real) / (q**2 + 1)
@@ -331,7 +328,6 @@ def to_fullpi2(zs, za, q=0, solution=(0,0)):   # match with a pi section
     y = to_halftee(rin, za, solution=solution[1])
     return x[1], x[0] + y[0], y[1]
 
-# fix
 def to_fulltee2(zs, za, q=0, solution=(0,0)):  # match with a tee section
     q = q or qmin(zs, za) + 1e-9
     rin = min(zs.real, za.real) * (q**2 + 1)
@@ -339,6 +335,14 @@ def to_fulltee2(zs, za, q=0, solution=(0,0)):  # match with a tee section
     y = to_halfpi(rin, za, solution=solution[1])
     return x[1], parallel(x[0], y[0]), y[1]
   
+def qmin2(zs, za):           # minimum q for a LL network
+    rp = max(zs.real, za.real)
+    rv = np.sqrt(rp * rs)
+    return np.sqrt(rp / rv - 1)
+
+# undocumented
+########################################
+
 def to_resistive_halftee(rin, ra):    # rin > ra
     r2 = ra - np.sqrt(rin / (rin - ra))
     r1 = rin - (ra * r2) / (ra + r2)
@@ -353,8 +357,41 @@ def halftee2(z1, y1, z2, y2): # a series input LL-match
 def halfpi2(z1, y1, z2, y2):  # a shunt input LL-match
     return halfpi(z1, y1) * halfpi(z2, y2)
 
-def qmin2(zs, za):           # minimum q for a LL network
-    rp = max(zs.real, za.real)
-    rv = np.sqrt(rp * rs)
-    return np.sqrt(rp / rv - 1)
+def hybrid(ai=None, av=None, rin=None, rout=None):
+    return np.matrix([
+        [ rin,  ai ],
+        [ 1/av, 1/rout ]])
+
+def common_source(RD, ID=1, RS=0, VP=4, IDSS=8):
+    gm = 2 * np.sqrt(ID * IDSS) / VP
+    rs = RS + 1 / gm
+    return hybrid(ai=np.inf, av=-RD/rs, rin=np.inf, rout=RD)
+
+def common_drain(RS, ID=1, VP=4, IDSS=8):
+    gm = 2 * np.sqrt(ID * IDSS) / VP
+    rs = RS + 1 / gm
+    return hybrid(ai=np.inf, av=RS/rs, rin=np.inf, rout=1/gm)
+
+def common_gate(RD, ID=1, VP=4, IDSS=8):
+    gm = 2 * np.sqrt(ID * IDSS) / VP
+    return hybrid(ai=1, av=gm*RD, rin=1/gm, rout=RD)
+
+def common_emitter(RC, IC=1, RE=0, beta=100, ft=300, f=0):
+    beta /= (1 + 1j * beta * f / ft)
+    gm = IC / 26
+    re = RE + 1 / gm
+    return hybrid(ai=beta, av=-RC/re, rin=beta*re, rout=RC)
+
+def common_collector(RE, IC=1, beta=100, ft=300, f=0):
+    beta /= (1 + 1j * beta * f / ft)
+    gm = IC / 26
+    re = RE + 1 / gm
+    return hybrid(ai=beta, av=RE/re, rin=beta*re, rout=1/gm)
+
+def common_base(RC, IC=1):
+    gm = IC / 26
+    return hybrid(ai=1, av=gm*RC, rin=1/gm, rout=RC)
+
+
+
 

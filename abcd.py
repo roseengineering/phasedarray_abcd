@@ -393,9 +393,6 @@ def common_base(RC, IC=1):
     return hybrid(ai=1, av=gm*RC, rin=1/gm, rout=RC)
 
 def bias_self(ID=1, IDSS=8, VP=-6):
-    # solve for RS: 
-    #   ID = IDSS * (1 - VGS / VP)**2 where VGS = -ID * RS
-    #   ID = IDSS * (1 + ID * RS / VP)**2
     return VP / ID * (np.sqrt(ID / IDSS) - 1)
 
 def bias_feedback(RC, RE=0, RBB=np.inf, IC=1, VCC=12, beta=100):
@@ -404,9 +401,4 @@ def bias_feedback(RC, RE=0, RBB=np.inf, IC=1, VCC=12, beta=100):
     ibb = ib + vb / RBB
     vc = RC * (IC + ibb) 
     return (vc - vb) / ibb
-
-
-ID = 1
-
-
 

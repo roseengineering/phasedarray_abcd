@@ -370,11 +370,11 @@ def common_source(RD, RS=0, ID=1, VP=-6, IDSS=8):
 def common_drain(RS, ID=1, VP=-6, IDSS=8):
     gm = -2 * np.sqrt(ID * IDSS) / VP
     rs = RS + 1 / gm
-    return hybrid(ai=np.inf, av=RS/rs, rin=np.inf, rout=1/gm)
+    return hybrid(ai=-np.inf, av=RS/rs, rin=np.inf, rout=1/gm)
 
 def common_gate(RD, ID=1, VP=-6, IDSS=8):
     gm = -2 * np.sqrt(ID * IDSS) / VP
-    return hybrid(ai=1, av=gm*RD, rin=1/gm, rout=RD)
+    return hybrid(ai=-1, av=gm*RD, rin=1/gm, rout=RD)
 
 def common_emitter(RC, RE=0, IC=1, beta=100, ft=300, f=0):
     beta /= (1 + 1j * beta * f / ft)
@@ -386,11 +386,11 @@ def common_collector(RE, IC=1, beta=100, ft=300, f=0):
     beta /= (1 + 1j * beta * f / ft)
     gm = IC / 26
     re = RE + 1 / gm
-    return hybrid(ai=beta, av=RE/re, rin=beta*re, rout=1/gm)
+    return hybrid(ai=-beta, av=RE/re, rin=beta*re, rout=1/gm)
 
 def common_base(RC, IC=1):
     gm = IC / 26
-    return hybrid(ai=1, av=gm*RC, rin=1/gm, rout=RC)
+    return hybrid(ai=-1, av=gm*RC, rin=1/gm, rout=RC)
 
 def bias_self(ID=1, IDSS=8, VP=-6):
     return VP / ID * (np.sqrt(ID / IDSS) - 1)

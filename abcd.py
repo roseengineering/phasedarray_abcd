@@ -396,9 +396,10 @@ def bias_self(ID=1, IDSS=8, VP=-6):
     return VP / ID * (np.sqrt(ID / IDSS) - 1)
 
 def bias_feedback(RC, RE=0, RBB=np.inf, IC=1, VCC=12, beta=100):
+    IC = IC / 1000
     ib = IC / beta
     vb = (IC + ib) * RE + .7
     ibb = ib + vb / RBB
-    vc = RC * (IC + ibb) 
+    vc = VCC - RC * (IC + ibb) 
     return (vc - vb) / ibb
 

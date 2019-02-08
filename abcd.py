@@ -392,18 +392,35 @@ def common_base(RC, IC=1):
     gm = IC / 26
     return hybrid(ai=-1, av=gm*RC, rin=1/gm, rout=RC)
 
-def bias_self_id(RS, IDSS=8, VP=-6):
+def fet_self_bias(ID=1, RS=None, VP=-6, IDSS=8):
+    if RS is None:
+        return VP / ID * (np.sqrt(ID / IDSS) - 1)
     gm = -2 * IDSS / VP
     return 2 * IDSS * (1 + gm * RS - np.sqrt(1 + 2 * gm * RS)) / gm**2 / RS**2
 
-def bias_self_rs(ID=1, IDSS=8, VP=-6):
-    return VP / ID * (np.sqrt(ID / IDSS) - 1)
-
-def bias_feedback(RC, RE=0, RBB=np.inf, IC=1, VCC=12, beta=100):
+def fet_divider_bias(RG, RS, ID=1, VDD=12, VP=-6, IDSS=8):
+    vgg = VP * (1 + ID * RS / VP - np.sqrt(ID / IDSS))
+    return RG * (VDD - vgg) / vgg
+    
+def npn_feedback_bias(RC, RE=0, RBB=np.inf, IC=1, VCC=12, beta=100):
     IC = IC / 1000
     ib = IC / beta
     vb = (IC + ib) * RE + .7
     ibb = ib + vb / RBB
     vc = VCC - RC * (IC + ibb) 
     return (vc - vb) / ibb
+
+def feedback_amplifier(RE=0, RF=0, RL=0, RS=0, IC=0, ID=None, VP=-6, IDSS=8):
+    if ID is None:
+        gm = IC / 26
+    else:
+        gm = -2 * np.sqrt(IDSS * ID) / VP
+    RD = RE + 1 / gm
+    Gv = -RL * (RF - RD) / RD / (RL + RF)
+    Zin = RD * (RL + RF) / (RL + RD)
+    Zout = RD * (RF + RS) / (RD + RS)
+    return Gv, Zin, Zout
+
+
+
 

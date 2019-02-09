@@ -423,10 +423,6 @@ def feedback_amplifier(RE=0, RF=0, RL=0, RS=0, mode='bjt', **kw):
 
 # biasing
 
-def bias_fet_self(ID=1, VP=-6, IDSS=8):
-    RS = VP / ID * (np.sqrt(ID / IDSS) - 1)
-    return RS
-
 def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
     IC = IC / 1000
     ib = IC / beta
@@ -437,13 +433,13 @@ def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
     return RF
 
 def bias_fet_divider(n, ID=1, VP=-6, IDSS=8):
-    VGS = VP * (1 - sqrt(ID / IDSS))
+    VGS = VP * (1 - np.sqrt(ID / IDSS))
     VG = -VGS * n + VGS
     RS = -VGS * n / ID
     return VG, RS
 
 def bias_mosfet_divider(n, ID=1, VTH=1, K=1.5):
-    VGS = sqrt(2 * ID / K) + VTH
+    VGS = np.sqrt(2 * ID / K) + VTH
     VG = VGS * n + VGS
     RS = VGS * n / ID
     return VG, RS

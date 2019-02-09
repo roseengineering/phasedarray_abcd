@@ -368,16 +368,19 @@ def hybrid(ai=None, av=None, rin=None, rout=None):
 def transconductance(mode, **kw):
     if mode == 'bjt':
         IC = kw.get('IC', 1)     # ma
-        return IC / 26
+        gm = IC / 26
+        return gm
     elif mode == 'fet':
         ID = kw.get('ID', 1)     # ma
         IDSS = kw.get('IDSS', 8) # ma
         VP = kw.get('VP', -6)    # v
-        return -2 * np.sqrt(ID * IDSS) / VP / 1000
+        gm = -2 * np.sqrt(ID * IDSS) / VP
+        return gm / 1000
     elif mode == 'mos':
         ID = kw.get('ID', 1)     # ma
         K = kw.get('K', 1.5)     # ma/v^2
-        return 2 * np.sqrt(K * ID) / 1000
+        gm = 2 * np.sqrt(K * ID)
+        return gm / 1000
     raise ValueError
 
 def common_source(RD, RS=0, **kw):
@@ -435,14 +438,14 @@ def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
 
 def bias_fet_divider(n, ID=1, VP=-6, IDSS=8):
     VGS = VP * (1 - sqrt(ID / IDSS))
-    VG = VGS - n * VGS
-    RS = VG / ID
+    VG = -VGS * n + VGS
+    RS = -VGS * n / ID
     return VG, RS
 
 def bias_mosfet_divider(n, ID=1, VTH=1, K=1.5):
     VGS = sqrt(2 * ID / K) + VTH
-    VG = VGS + n * VGS
-    RS = VG / ID
+    VG = VGS * n + VGS
+    RS = VGS * n / ID
     return VG, RS
 
 

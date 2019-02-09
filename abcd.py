@@ -358,53 +358,60 @@ def halftee2(z1, y1, z2, y2): # a series input LL-match
 def halfpi2(z1, y1, z2, y2):  # a shunt input LL-match
     return halfpi(z1, y1) * halfpi(z2, y2)
 
-# amp models
-
-def transconductance(mode, IC=None, ID=None, VP=None, IDSS=None):
-    if mode == 'bjt':
-        return IC / 26
-    elif mode == 'fet':
-        return -2 * np.sqrt(ID * IDSS) / VP
-    raise ValueError
-
 def hybrid(ai=None, av=None, rin=None, rout=None):
     return np.matrix([
         [ rin,  ai ],
         [ 1/av, 1/rout ]])
 
-def common_source(RD, RS=0, ID=1, VP=-6, IDSS=8):
-    gm = transconductance('fet', ID=ID, VP=VP, IDSS=IDSS)
+# amp models
+
+def transconductance(mode, **kw):
+    if mode == 'bjt':
+        IC = kw.get('IC', 1)     # ma
+        return IC / 26
+    elif mode == 'fet':
+        ID = kw.get('ID', 1)     # ma
+        IDSS = kw.get('IDSS', 8) # ma
+        VP = kw.get('VP', -6)    # v
+        return -2 * np.sqrt(ID * IDSS) / VP / 1000
+    elif mode == 'mos':
+        ID = kw.get('ID', 1)     # ma
+        K = kw.get('K', 1.5)     # ma/v^2
+        return 2 * np.sqrt(K * ID) / 1000
+    raise ValueError
+
+def common_source(RD, RS=0, **kw):
+    gm = transconductance('fet', **kw)
     rs = RS + 1 / gm
     return hybrid(ai=inf, av=-RD/rs, rin=inf, rout=RD)
 
-def common_drain(RS, ID=1, VP=-6, IDSS=8):
-    gm = transconductance('fet', ID=ID, VP=VP, IDSS=IDSS)
+def common_drain(RS, **kw):
+    gm = transconductance('fet', **kw)
     rs = RS + 1 / gm
     return hybrid(ai=-inf, av=RS/rs, rin=inf, rout=1/gm)
 
-def common_gate(RD, ID=1, VP=-6, IDSS=8):
-    gm = transconductance('fet', ID=ID, VP=VP, IDSS=IDSS)
+def common_gate(RD, **kw):
+    gm = transconductance('fet', **kw)
     return hybrid(ai=-1, av=gm*RD, rin=1/gm, rout=RD)
 
-def common_emitter(RC, RE=0, IC=1, beta=100, ft=300, f=0):
-    gm = transconductance('bjt', IC=IC)
+def common_emitter(RC, RE=0, beta=100, f=0, ft=300, **kw):
+    gm = transconductance('bjt', **kw)
     beta /= (1 + 1j * beta * f / ft)
     re = RE + 1 / gm
     return hybrid(ai=beta, av=-RC/re, rin=beta*re, rout=RC)
 
-def common_collector(RE, IC=1, beta=100, ft=300, f=0):
-    gm = transconductance('bjt', IC=IC)
+def common_collector(RE, beta=100, f=0, ft=300, **kw):
+    gm = transconductance('bjt', **kw)
     beta /= (1 + 1j * beta * f / ft)
     re = RE + 1 / gm
     return hybrid(ai=-beta, av=RE/re, rin=beta*re, rout=1/gm)
 
-def common_base(RC, IC=1):
-    gm = transconductance('bjt', IC=IC)
+def common_base(RC, **kw):
+    gm = transconductance('bjt', **kw)
     return hybrid(ai=-1, av=gm*RC, rin=1/gm, rout=RC)
 
-def feedback_amplifier(RE=0, RF=0, RL=0, RS=0, mode='bjt',
-                       IC=1, ID=1, VP=-6, IDSS=8):
-    gm = transconductance(mode, IC=IC, ID=ID, IDSS=8, VP=VP)
+def feedback_amplifier(RE=0, RF=0, RL=0, RS=0, mode='bjt', **kw):
+    gm = transconductance(mode, **kw)
     RD = RE + 1 / gm
     Gv = -RL * (RF - RD) / RD / (RL + RF)
     Zin = RD * (RL + RF) / (RL + RD)
@@ -413,11 +420,11 @@ def feedback_amplifier(RE=0, RF=0, RL=0, RS=0, mode='bjt',
 
 # biasing
 
-def fet_self_bias(ID=1, VP=-6, IDSS=8):
+def bias_fet_self(ID=1, VP=-6, IDSS=8):
     RS = VP / ID * (np.sqrt(ID / IDSS) - 1)
     return RS
 
-def npn_feedback_bias(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
+def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
     IC = IC / 1000
     ib = IC / beta
     vb = (IC + ib) * RE + .7
@@ -426,9 +433,16 @@ def npn_feedback_bias(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
     RF = (vc - vb) / ibb
     return RF
 
-def fet_divider_bias(VG, ID=1, VP=-6, IDSS=8):
+def bias_fet_divider(n, ID=1, VP=-6, IDSS=8):
+    VGS = VP * (1 - sqrt(ID / IDSS))
+    VG = VGS - n * VGS
     RS = VG / ID
-    return RS
+    return VG, RS
 
+def bias_mosfet_divider(n, ID=1, VTH=1, K=1.5):
+    VGS = sqrt(2 * ID / K) + VTH
+    VG = VGS + n * VGS
+    RS = VG / ID
+    return VG, RS
 
 

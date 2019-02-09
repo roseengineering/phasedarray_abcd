@@ -410,11 +410,8 @@ def npn_feedback_bias(RC, RE=0, RBB=np.inf, IC=1, VCC=12, beta=100):
     vc = VCC - RC * (IC + ibb) 
     return (vc - vb) / ibb
 
-def feedback_amplifier(RE=0, RF=0, RL=0, RS=0, IC=0, ID=None, VP=-6, IDSS=8):
-    if ID is None:
-        gm = IC / 26
-    else:
-        gm = -2 * np.sqrt(IDSS * ID) / VP
+def feedback_amplifier(RE=0, RF=0, RL=0, RS=0, IC=1, ID=None, VP=-6, IDSS=8):
+    gm = -2 * np.sqrt(IDSS * ID) / VP if ID else IC / 26
     RD = RE + 1 / gm
     Gv = -RL * (RF - RD) / RD / (RL + RF)
     Zin = RD * (RL + RF) / (RL + RD)

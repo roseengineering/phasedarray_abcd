@@ -365,7 +365,7 @@ def hybrid(ai=None, av=None, rin=None, rout=None):
 
 # amp models
 
-def transconductance(mode, **kw):
+def transconductance(mode='bjt', **kw):
     if mode == 'bjt':
         IC = kw.get('IC', 1)     # ma
         gm = IC / 26
@@ -413,8 +413,10 @@ def common_base(RC, **kw):
     gm = transconductance('bjt', **kw)
     return hybrid(ai=-1, av=gm*RC, rin=1/gm, rout=RC)
 
-def feedback_amplifier(RE=0, RF=0, RL=0, RS=0, IC=1):
-    RD = RE + 26 / IC
+def fba(RE=0, RF=0, RL=0, RS=0, n=1, **kw):
+    gm = transconductance(**kw)
+    RD = RE + 1 / gm
+    RD /= n
     Gv = -RL * (RF - RD) / RD / (RL + RF)
     Zin = RD * (RL + RF) / (RL + RD)
     Zout = RD * (RF + RS) / (RD + RS)
@@ -437,7 +439,7 @@ def bias_fet_divider(n, ID=1, VP=-6, IDSS=8):
     RS = -VGS * n / ID
     return VG, RS
 
-def bias_mosfet_divider(n, ID=1, VTH=1, K=1.5):
+def bias_mos_divider(n, ID=1, VTH=1, K=1.5):
     VGS = np.sqrt(2 * ID / K) + VTH
     VG = VGS * n + VGS
     RS = VGS * n / ID

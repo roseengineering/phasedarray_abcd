@@ -413,9 +413,8 @@ def common_base(RC, **kw):
     gm = transconductance('bjt', **kw)
     return hybrid(ai=-1, av=gm*RC, rin=1/gm, rout=RC)
 
-def feedback_amplifier(RE=0, RF=0, RL=0, RS=0, mode='bjt', **kw):
-    gm = transconductance(mode, **kw)
-    RD = RE + 1 / gm
+def feedback_amplifier(RE=0, RF=0, RL=0, RS=0, IC=1):
+    RD = RE + 26 / IC
     Gv = -RL * (RF - RD) / RD / (RL + RF)
     Zin = RD * (RL + RF) / (RL + RD)
     Zout = RD * (RF + RS) / (RD + RS)

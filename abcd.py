@@ -413,10 +413,8 @@ def common_base(RC, **kw):
     gm = transconductance('bjt', **kw)
     return hybrid(ai=-1, av=gm*RC, rin=1/gm, rout=RC)
 
-def fba(RE=0, RF=0, RL=0, RS=0, n=1, **kw):
-    gm = transconductance(**kw)
-    RD = RE + 1 / gm
-    RD /= n
+def fba(RD=0, RF=0, RL=0, RS=0, N=1):
+    RD /= N
     Gv = -RL * (RF - RD) / RD / (RL + RF)
     Zin = RD * (RL + RF) / (RL + RD)
     Zout = RD * (RF + RS) / (RD + RS)

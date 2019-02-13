@@ -1,4 +1,5 @@
 
+import sys
 import numpy as np
 from numpy import inf
 
@@ -421,6 +422,9 @@ def fba(RD=0, RF=0, RL=0, RS=0, N=1):
     return Gv, Zin, Zout
 
 # biasing
+# XCB << RS so let XCB < RS/10 at fmin (common emitter)
+# XCE << RS+re||RE so let XCE < (RS+re)/10 at fmin (common base)
+# RF||RB << (BETA+1)*RE so let RB||RF < (BETA+1)*RE/10
 
 def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
     IC = IC / 1000
@@ -429,6 +433,8 @@ def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
     ibb = ib + vb / RB
     vc = VCC - RC * (IC + ibb) 
     RF = (vc - vb) / ibb
+    if parallel(RF, RB) > (beta + 1) * RE / 10:
+        print("RF || RB should be << (BETA+1)*RE")
     return RF
 
 def bias_fet_divider(n, ID=1, VP=-6, IDSS=8):

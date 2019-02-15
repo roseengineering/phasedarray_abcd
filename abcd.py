@@ -432,19 +432,19 @@ def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
     ibb = ib + vb / RB
     vc = VCC - RC * (IC + ibb) 
     RF = (vc - vb) / ibb
-    n = (beta + 1) * RE / parallel(RF, RB)
-    return RF, n
+    N = (beta + 1) * RE / parallel(RF, RB)
+    return RF, N
 
-def bias_fet_divider(n=10, ID=1, VP=-6, IDSS=8):
+def bias_fet_divider(N=10, ID=1, VP=-6, IDSS=8):
     VGS = VP * (1 - np.sqrt(ID / IDSS))
-    VG = -VGS * n + VGS
-    RS = -VGS * n / ID
+    VG = -VGS * N + VGS
+    RS = -VGS * N / ID
     return VG, RS
 
-def bias_mos_divider(n=10, ID=1, VTH=1, K=1.5):
+def bias_mos_divider(N=10, ID=1, VTH=1, K=1.5):
     VGS = np.sqrt(2 * ID / K) + VTH
-    VG = VGS * n + VGS
-    RS = VGS * n / ID
+    VG = VGS * N + VGS
+    RS = VGS * N / ID
     return VG, RS
 
 

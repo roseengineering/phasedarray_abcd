@@ -432,9 +432,8 @@ def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
     ibb = ib + vb / RB
     vc = VCC - RC * (IC + ibb) 
     RF = (vc - vb) / ibb
-    if parallel(RF, RB) > (beta + 1) * RE / 10:
-        print("RF || RB should be << (BETA+1)*RE")
-    return RF
+    n = (beta + 1) * RE / parallel(RF, RB)
+    return RF, n
 
 def bias_fet_divider(n=10, ID=1, VP=-6, IDSS=8):
     VGS = VP * (1 - np.sqrt(ID / IDSS))

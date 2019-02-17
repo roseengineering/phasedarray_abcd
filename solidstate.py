@@ -1,4 +1,7 @@
 
+import numpy as np
+from numpy import inf
+
 def hybrid(ai=None, av=None, rin=None, rout=None):
     return np.matrix([
         [ rin,  ai ],

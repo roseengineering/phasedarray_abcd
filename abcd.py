@@ -426,9 +426,10 @@ def fba(RD=0, RF=0, RL=0, RS=0, N=1):
 # RF||RB << (BETA+1)*RE so let RB||RF < (BETA+1)*RE/10
 
 def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
+    VBE = .7
     IC = IC / 1000
     ib = IC / beta
-    vb = (IC + ib) * RE + .7
+    vb = (IC + ib) * RE + VBE
     ibb = ib + vb / RB
     vc = VCC - RC * (IC + ibb) 
     RF = (vc - vb) / ibb
@@ -436,12 +437,14 @@ def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
     return RF, N
 
 def bias_fet_divider(N=10, ID=1, VP=-6, IDSS=8):
+    # ID = IDSS * (1 - VGS / VP)^2, solving for VGS
     VGS = VP * (1 - np.sqrt(ID / IDSS))
     VG = -VGS * N + VGS
     RS = -VGS * N / ID
     return VG, RS
 
 def bias_mos_divider(N=10, ID=1, VTH=1, K=1.5):
+    # ID = K / 2 * (VGS - VTH)**2, solving for VGS
     VGS = np.sqrt(2 * ID / K) + VTH
     VG = VGS * N + VGS
     RS = VGS * N / ID

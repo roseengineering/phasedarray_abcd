@@ -293,10 +293,9 @@ def status(v, note=0):
     return v
 
 def component(values, fd, precision=4):
-    return [ notation(component_value(z, fd), precision, units='FH')
-             for z in values ]
+    return [ notation(component_value(z, fd), precision) for z in values ]
 
-def notation(x, precision=4, units=None):
+def notation(x, precision=4, units='FH'):
     SUFFIX = ["p", "n", "u", "m", "", "k", "M", "G"]
     exp = np.floor(np.log10(np.absolute(x)))
     mant = round(x / 10**exp, precision-1)

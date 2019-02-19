@@ -296,7 +296,7 @@ def component(values, fd, **kw):
     return [ notation(component_value(z, fd), **kw) for z in values ]
 
 def notation(x, precision=5, units='FH'):
-    SUFFIX = ["p", "n", "u", "m", "", "k", "M", "G"]
+    SUFFIX = ["f", "p", "n", "u", "m", "", "k", "M", "G"]
     exp = np.floor(np.log10(np.absolute(x)))
     mant = round(x / 10**exp, precision-1)
     p = int(exp // 3)

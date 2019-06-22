@@ -65,6 +65,8 @@ def fba(RD=0, RF=0, RL=0, RS=0, N=1):
     return Gv, Zin, Zout
 
 # biasing
+
+# bjt feedback bias
 # XCB << RS so let XCB < RS/10 at fmin (common emitter)
 # XCE << RS+re||RE so let XCE < (RS+re)/10 at fmin (common base)
 # RF||RB << (BETA+1)*RE so let RB||RF < (BETA+1)*RE/10
@@ -80,6 +82,13 @@ def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
     N = (beta + 1) * RE / parallel(RF, RB)
     return RF, N
 
+# fet divider bias
+# RS * ID >> VGS for best feedback
+# if RS * ID >> VGS and VG = RS * ID + VGS 
+#       then VG ~= RS * ID
+#       so ID ~= VG / RS 
+#       so RS ~= VG / ID
+
 def bias_fet_divider(N=10, ID=1, VP=-6, IDSS=8):
     # ID = IDSS * (1 - VGS / VP)^2, solving for VGS
     VGS = VP * (1 - np.sqrt(ID / IDSS))
@@ -87,7 +96,14 @@ def bias_fet_divider(N=10, ID=1, VP=-6, IDSS=8):
     RS = -VGS * N / ID
     return VG, RS
 
-def bias_mos_divider(N=10, ID=1, VTH=1, K=1.5):
+# mosfet divider bias
+# RS * ID >> VGS for best feedback
+# if RS * ID >> VGS and VG = RS * ID + VGS 
+#       then VG ~= RS * ID
+#       so ID ~= VG / RS 
+#       so RS ~= VG / ID
+
+def bias_mosfet_divider(N=10, ID=1, VTH=1, K=1.5):
     # ID = K / 2 * (VGS - VTH)**2, solving for VGS
     VGS = np.sqrt(2 * ID / K) + VTH
     VG = VGS * N + VGS

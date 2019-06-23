@@ -10,18 +10,17 @@ def hybrid(ai=None, av=None, rin=None, rout=None):
 # amp models
 
 def transconductance(mode='bjt', **kw):
+    IC = kw.get('IC') or 1   # ma
+    ID = kw.get('ID') or IC  # ma
     if mode == 'bjt':
-        IC = kw.get('IC', 1)     # ma
         gm = IC / 26
         return gm
     elif mode == 'fet':
-        ID = kw.get('ID', 1)     # ma
         IDSS = kw.get('IDSS', 8) # ma
         VP = kw.get('VP', -6)    # v
         gm = -2 * np.sqrt(ID * IDSS) / VP
         return gm / 1000
     elif mode == 'mos':
-        ID = kw.get('ID', 1)     # ma
         K = kw.get('K', 1.5)     # ma/v^2
         gm = 2 * np.sqrt(K * ID)
         return gm / 1000
@@ -103,7 +102,7 @@ def bias_fet_divider(N=10, ID=1, VP=-6, IDSS=8):
 #       so ID ~= VG / RS 
 #       so RS ~= VG / ID
 
-def bias_mosfet_divider(N=10, ID=1, VTH=1, K=1.5):
+def bias_mos_divider(N=10, ID=1, VTH=1, K=1.5):
     # ID = K / 2 * (VGS - VTH)**2, solving for VGS
     VGS = np.sqrt(2 * ID / K) + VTH
     VG = VGS * N + VGS

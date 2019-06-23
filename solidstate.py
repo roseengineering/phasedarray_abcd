@@ -5,7 +5,7 @@ from numpy import inf
 DEFAULT_IC = 1     # ma
 DEFAULT_IDSS = 10  # ma (mpf102)
 DEFAULT_VP = -4    # v (mpf102)
-DEFAULT_K = 1.5    # ma/v^2
+DEFAULT_K = 100    # ma/v^2 (2n7000)
 DEFAULT_VTH = 1
 DEFAULT_BETA = 100
 DEFAULT_FT = 300

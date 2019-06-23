@@ -16,12 +16,12 @@ def transconductance(mode='bjt', **kw):
         gm = IC / 26
         return gm
     elif mode == 'fet':
-        IDSS = kw.get('IDSS', 8) # ma
-        VP = kw.get('VP', -6)    # v
+        IDSS = kw.get('IDSS', 10) # ma (mpf102)
+        VP = kw.get('VP', -3)     # v (mpf102)
         gm = -2 * np.sqrt(ID * IDSS) / VP
         return gm / 1000
     elif mode == 'mos':
-        K = kw.get('K', 1.5)     # ma/v^2
+        K = kw.get('K', 1.5)      # ma/v^2
         gm = 2 * np.sqrt(K * ID)
         return gm / 1000
     raise ValueError
@@ -88,7 +88,7 @@ def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
 #       so ID ~= VG / RS 
 #       so RS ~= VG / ID
 
-def bias_fet_divider(N=10, ID=1, VP=-6, IDSS=8):
+def bias_fet_divider(N=10, ID=1, VP=-3, IDSS=10):
     # ID = IDSS * (1 - VGS / VP)^2, solving for VGS
     VGS = VP * (1 - np.sqrt(ID / IDSS))
     VG = -VGS * N + VGS

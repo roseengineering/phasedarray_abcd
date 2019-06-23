@@ -2,6 +2,14 @@
 import numpy as np
 from numpy import inf
 
+DEFAULT_IC = 1     # ma
+DEFAULT_IDSS = 10  # ma (mpf102)
+DEFAULT_VP = -4    # v (mpf102)
+DEFAULT_K = 1.5    # ma/v^2
+DEFAULT_VTH = 1
+DEFAULT_BETA = 100
+DEFAULT_FT = 300
+
 def hybrid(ai=None, av=None, rin=None, rout=None):
     return np.matrix([
         [ rin,  ai ],
@@ -10,18 +18,18 @@ def hybrid(ai=None, av=None, rin=None, rout=None):
 # amp models
 
 def transconductance(mode='bjt', **kw):
-    IC = kw.get('IC') or 1   # ma
-    ID = kw.get('ID') or IC  # ma
+    IC = kw.get('IC') or DEFAULT_IC
+    ID = kw.get('ID') or IC
     if mode == 'bjt':
         gm = IC / 26
         return gm
     elif mode == 'fet':
-        IDSS = kw.get('IDSS', 10) # ma (mpf102)
-        VP = kw.get('VP', -3)     # v (mpf102)
+        IDSS = kw.get('IDSS') or DEFAULT_IDSS
+        VP = kw.get('VP') or DEFAULT_VP
         gm = -2 * np.sqrt(ID * IDSS) / VP
         return gm / 1000
     elif mode == 'mos':
-        K = kw.get('K', 1.5)      # ma/v^2
+        K = kw.get('K') or DEFAULT_K
         gm = 2 * np.sqrt(K * ID)
         return gm / 1000
     raise ValueError
@@ -40,13 +48,13 @@ def common_gate(RD, **kw):
     gm = transconductance('fet', **kw)
     return hybrid(ai=-1, av=gm*RD, rin=1/gm, rout=RD)
 
-def common_emitter(RC, RE=0, beta=100, f=0, ft=300, **kw):
+def common_emitter(RC, RE=0, beta=DEFAULT_BETA, f=0, ft=DEFAULT_FT, **kw):
     gm = transconductance('bjt', **kw)
     beta /= (1 + 1j * beta * f / ft)
     re = RE + 1 / gm
     return hybrid(ai=beta, av=-RC/re, rin=beta*re, rout=RC)
 
-def common_collector(RE, beta=100, f=0, ft=300, **kw):
+def common_collector(RE, beta=DEFAULT_BETA, f=0, ft=DEFAULT_FT, **kw):
     gm = transconductance('bjt', **kw)
     beta /= (1 + 1j * beta * f / ft)
     re = RE + 1 / gm
@@ -70,7 +78,7 @@ def fba(RD=0, RF=0, RL=0, RS=0, N=1):
 # XCE << RS+re||RE so let XCE < (RS+re)/10 at fmin (common base)
 # RF||RB << (BETA+1)*RE so let RB||RF < (BETA+1)*RE/10
 
-def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
+def bias_bjt_feedback(RC, RE=0, RB=inf, IC=DEFAULT_IC, VCC=12, beta=DEFAULT_BETA):
     VBE = .7
     IC = IC / 1000
     ib = IC / beta
@@ -88,7 +96,7 @@ def bias_bjt_feedback(RC, RE=0, RB=inf, IC=1, VCC=12, beta=100):
 #       so ID ~= VG / RS 
 #       so RS ~= VG / ID
 
-def bias_fet_divider(N=10, ID=1, VP=-3, IDSS=10):
+def bias_fet_divider(N=10, ID=DEFAULT_IC, VP=DEFAULT_VP, IDSS=DEFAULT_IDSS):
     # ID = IDSS * (1 - VGS / VP)^2, solving for VGS
     VGS = VP * (1 - np.sqrt(ID / IDSS))
     VG = -VGS * N + VGS
@@ -102,7 +110,7 @@ def bias_fet_divider(N=10, ID=1, VP=-3, IDSS=10):
 #       so ID ~= VG / RS 
 #       so RS ~= VG / ID
 
-def bias_mos_divider(N=10, ID=1, VTH=1, K=1.5):
+def bias_mos_divider(N=10, ID=DEFAULT_IC, VTH=DEFAULT_VTH, K=DEFAULT_K):
     # ID = K / 2 * (VGS - VTH)**2, solving for VGS
     VGS = np.sqrt(2 * ID / K) + VTH
     VG = VGS * N + VGS

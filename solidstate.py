@@ -10,7 +10,7 @@ DEFAULT_VTH = 1
 DEFAULT_BETA = 100
 DEFAULT_FT = 300
 
-def hybrid(ai=None, av=None, rin=None, rout=None):
+def hybrid(ai=0, av=0, rin=0, rout=0):
     return np.matrix([
         [ rin,  ai ],
         [ 1/av, 1/rout ]])

@@ -18,6 +18,8 @@ def hybrid(ai=0, av=0, rin=0, rout=0):
 # amp models
 
 def transconductance(mode='bjt', **kw):
+    # returns gm in siemens
+    # note, ic and id are in ma
     IC = kw.get('IC') or DEFAULT_IC
     ID = kw.get('ID') or IC
     if mode == 'bjt':
@@ -29,6 +31,9 @@ def transconductance(mode='bjt', **kw):
         gm = -2 * np.sqrt(ID * IDSS) / VP
         return gm / 1000
     elif mode == 'mos':
+        # ID = K * (VG - VTH)^2
+        # so ID^.5 = K^.5 * (VG - VTH)
+        # therefore K^.5 = d(ID^.5) / d(VG)
         K = kw.get('K') or DEFAULT_K
         gm = 2 * np.sqrt(K * ID)
         return gm / 1000
